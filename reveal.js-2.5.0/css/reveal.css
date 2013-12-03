@@ -313,7 +313,7 @@ body {
 	font-family: monospace;
 }
 .reveal pre code {
-	padding: 5px;
+	padding: 10px;
 	overflow: auto;
 	max-height: 400px;
 	word-wrap: normal;
