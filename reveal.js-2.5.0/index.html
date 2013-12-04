@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="css/reveal.css">
     <link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+    <link rel="stylesheet" href="css/mikael.css">
 
     <!-- For syntax highlighting -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
@@ -191,8 +192,7 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
         .addMapIndexConfig(new MapIndexConfig("ownerId", false))        // usortert
         .addMapIndexConfig(new MapIndexConfig("animalId", false))
         .addMapIndexConfig(new MapIndexConfig("enrollmentDate", true)); // sortert
-}
-</code></pre>
+}</code></pre>
         </script>
         </section>
 
@@ -217,6 +217,90 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
 
 }</pre></code>
         </section>
+
+        <section>
+        <h2>Backups og replikering</h2>
+        <ul>
+          <li class="fragment">Vi har gått for null replikering</li>
+          <li class="fragment">Griden er ikkje master for data</li>
+          <li class="fragment">Dette gir oss:</li>
+          <ul>
+            <li class="fragment">raskare oppstart</li>
+            <li class="fragment">mindre overhead mellom nodane</li>
+            <li class="fragment">lavare minnebruk</li>
+          </ul>
+          <li class="fragment">Ulempe: ved node-feil må vi restarte heile clusteret</li>
+          <p style="margin-top: 30px; font-size: 0.7em;" class="fragment">Men vi er framleis ikkje i produsjon..</p>
+        </ul>
+        </section>
+        </section>
+
+        <section>
+        <section>
+        <h2>Repositories</h2>
+        <p>Vert oppretta vha konstruktør som tek inn ein HazelcastInstance</p>
+        <pre><code>public class AnimalRepositoryHz implements AnimalRepository {
+
+    private final IMap&lt;AnimalKey, AnimalItem&gt; animalsMap;
+    private final IMap&lt;EnrollmentPeriodKey, EnrollmentPeriodItem&gt; epsMap;
+    private final IMap&lt;AnimalKey, List&lt;ParturitionItem&gt&gt; parturitionsMap;
+    
+    public AnimalCalculationItemRepositoryHz(HazelcastInstance hzInstance) {
+        this.animalsMap = hzInstance.getMap(AnimalItems.name());
+        this.epsMap = hzInstance.getMap(EnrollmentPeriodItems.name());
+        this.parturitionsMap = hzInstance.getMap(ParturitionCollections.name());
+    }
+    
+    // diverse metoder på slidesa under...
+
+}</pre></code>
+        </section>
+        <section>
+        <h2>Bygg opp komplekst objekt vha mapper</h2>
+        <pre><code class="medium" data-trim contenteditable>@Override public AnimalCalculationItem findAnimal(long animalId, MapAnimalCollections mapper) {
+
+    AnimalKey key = new AnimalKey(animalId); // kun wrapping av long
+    AnimalCalculationItem animal = new AnimalCalculationItem(
+            animalsMap.get(key)
+    );
+    if (animalIsLocal(animalId)) {
+        return addCollectionsLocally(animal, key, mapper);
+    } else {
+        return addCollectionsDistributed(animal, key, mapper);
+    }
+}
+
+private boolean animalIsLocal(long animalId) {
+    return !animalsMap.localKeySet(isId(animalId)).isEmpty();
+}
+
+private static Predicate isId(long id) {
+    return PredicateResource.entry().get("id").equal(id);
+    // kan også gjerast vha SqlPredicate
+}</pre></code>
+        </section>
+
+        <section>
+        <h2>Lokalt eller distribuert</h2>
+        <p>Lokalt:</p>
+        <pre><code class="medium">Predicate animalPredicate = isAnimalId(animal.getId());
+for (EnrollmentPeriodKey key : epsMap.localKeySet(animalPredicate)) {
+    animal.getEnrollmentPeriods().add(epsMap.get(key));
+}</pre></code>
+       <p>Distribuert:</p>
+        <pre><code class="medium">Predicate animalPredicate = isAnimalId(animal.getId());
+animal.getEnrollmentPeriods().addAll(epsMap.values(animalPredicate));</pre></code>
+        <p>Begge deler:</p>
+        <pre><code class="medium">private AnimalCalculationItem addUsingGetOnKey(AnimalCalculationItem animal, AnimalKey animalKey, MapAnimalCollections mapper) {
+    if (mapper.isMapParturition()) {
+        animal.getParturitions().addAll(parturitionsMap.get(animalKey));
+    }
+    if (mapper.isMapMilkSamples()) {
+        animal.getMilkSamples().addAll(milkSamplesMap.get(animalKey));
+    }
+    return animal;
+}</pre></code>
+         </section>
         </section>
 
         <section> 
@@ -228,7 +312,7 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
             <li>lastar alle eksisterande data på nytt</li>
           </ul>
         </ul>
-        <pre style="font-size: 0.4em;"><code>public class AnimalReloader implements Callable&lt;Boolean&gt; HazelcastInstanceAware, 
+        <pre><code class="medium">public class AnimalReloader implements Callable&lt;Boolean&gt; HazelcastInstanceAware, 
             PartitionAware&lt;AnimalKey&gt; Serializable {
     protected final CalculationItemIdentifier&lt;AnimalKey&gt; reloads;
     protected transient HazelcastInstance hazelcastInstance;
@@ -252,7 +336,6 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
         return mainKey();
     }
 }</pre></code>
-
         </section> 
 
         <section data-markdown data-background="#007777">
@@ -293,8 +376,19 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
           </code></pre>
         </section>
 
+        <section data-markdown>
+          ## Prosjektstatus
+          * Avlastar relasjonsbasa
+          * Data blir kontinuerlig synkronisert mellom grid og db 
+          * Blir brukt som ei tjeneste
+            * køyre beregningar
+            * hente ut data
+          * Håndterer ikkje persistering
+            * har tankar om korleis det bør/kan gjerast
+        </section>
+
         <section>
-        <h1>Spørsmål?</h1>
+        <h1>Spørsmål.</h1>
         <p class="fragment fade-in">... og swag!</p>
         </section>
 
