@@ -47,63 +47,51 @@
         </section>
 
         <section>
-        <section>
-        <h2>Domene-intro</h2>
+        <h2>Case</h2>
         <ul>
-          <li class="fragment">Jobbar med dyr og buskapar</li>
+          <li class="fragment">Dyr, produsentar og buskapar</li>
           <li class="fragment">Ganske Big Data</li>
-          <li class="fragment">Semi-massive beregningar</li>
-          <li class="fragment">Månedlige og årlige batch-jobbar</li>
           <li class="fragment">Kontinuerlige endringar i datagrunnlaget</li>
+          <li class="fragment">Månedlige og årlige batch-jobbar</li>
+          <li class="fragment">Semi-massive beregningar</li>
           <li class="fragment">Reberegning ved endringar</li>
         </ul>
         </section>
 
         <section>
-        <h2>Datatypar</h2>
+        <h2>Domene</h2>
         <img width="900" height="530" src="assets/domain-model.png" alt="Domene-modell">
         </section>
+
         <section>
         <h2>Datamengder</h2>
         <p>Alle tala er tilnærma...</p>
         <ul>
           <li>10k aktive produsentar (37k totalt)</li>
           <li>400k mjølkekontrollar</li>
-          <li class="fragment grow">1.5mill dyr</li>
-          <li>1.8mill innmeldingar</li>
-          <li>2mill kalvingar</li>
-          <li>6mill mjølkeprøver</li>
-          <li>6mill kraftformengder</li>
-          <li>3mill mjølkeanalyser</li>
+          <li class="fragment grow">1.5 mill dyr</li>
+          <li>1.8 mill innmeldingar</li>
+          <li>2 mill kalvingar</li>
+          <li>6 mill mjølkeprøver</li>
+          <li>6 mill kraftformengder</li>
+          <li>3 mill mjølkeanalyser</li>
         </ul>
-        </section>
         </section>
 
         <section>
-          <h2>Node- og cluster-start</h2>
-          <pre><code>public final class Server {
-    public static void main(String[] args) {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(
-            ServerConfig.class
-        );
-        Node node = ctx.getBean(Node.class);
-        if (toBoolean(System.getProperty("hz.init"))) {
-            node.touch();
-        }
-    }
-}</pre></code>
-        </section>
-
-        <section data-markdown>
-        <script type="text/template">
-          ## Korleis held Hazelcast på data?
-          * Maps...
-          ```
-          public interface IMap<K, V> extends ConcurrentMap<K, V>, BaseMap<K, V> {
-              // pluss en del ekstra metoder } ```
-          * Bruk kva som helst som nøkkel og verdi...
-          * ... so lenge det kan serialiaserast
-        </script>
+        <section>
+          <h2>Korleis held Hazelcast på data?</h2>
+          <ul>
+            <li>Maps...</li>
+            <ul>
+              <li>Bruk kva som helst som nøkkel og verdi...</li>
+              <li>... so lenge det kan serialiaserast</li>
+            </ul>
+          </ul>
+          <pre><code>public interface IMap&lt;K, V&gt; extends ConcurrentMap&lt;K, V&gt; BaseMap&lt;K, V&gt; {
+    // Alle map-metoder er tilgjengelige
+    // pluss ein del ekstra metoder 
+}</code></pre>
         </section>
 
         <section data-markdown>
@@ -112,21 +100,8 @@
           * Alt som blir lagra på griden: *Kryo*
             * kjapt, liten footprint
             * ødela immutability 
-            * <small>(fjerna final på felt, la til default-konstruktør)</small>
+              * <small>(fjerna final på felt, la til default-konstruktør)</small>
           * Alt anna: Standard Java-serialisering
-        </script>
-        </section>
-
-        <section data-markdown data-transition="linear">
-        <script type="text/template">
-          ## Trøbbel med minnebruk
-          * Kryo -> kvart object ~50 byte
-          * MEN det blir lagra ekstra informasjon om kvar einaste map entry
-          ```
-          map.getMapEntry(key)
-          ```
-          * Omlag <strong>100 byte</strong> ekstra for kvar entry!!
-          <p class="fragment" style="margin-top:50px"><small>Meir om den ulempa om litt...</small></p>
         </script>
         </section>
         </section>
@@ -141,28 +116,54 @@
             </ul>
             <li class="fragment">I starten låg alle objekt i maps som egne entries,</li>
             <ul class="fragment">
-              <li>men all ekstra-informasjonen føkka den løysinga,</li>
-              <li>en node med 500mb data brukte <strong>4gig med minne..</strong></li>
+              <li>MEN det blir lagra tillegginfo om kvar einaste map-entry
+              <li>det føkka for den løysinga</li>
+              <li class="fragment">ein node med 500mb data brukte <strong>4gig med minne..</strong></li>
             </ul>
-            <li class="fragment">Ny strategi...</li>
           </ul>
         </section>
+
+        <section>
+        <section data-markdown data-transition="linear">
+        <script type="text/template">
+          ## Trøbbel med minnebruk
+          * Kryo -> kvart objekt ~50 byte
+          * Ekstra informasjon om kvar einaste map-entry **kostar**
+          ```
+          EntryView ev = map.getEntryView(key);
+          ev.getCost();
+          ev.getCreationTime();
+          ev.getHits();
+          ev.getLastAccessTime();
+          // og meir
+          ```
+          * Omlag **100 byte** ekstra for kvar entry!!
+          <p class="fragment" style="margin-top:50px"><small>Meir om den ulempa etter ei reprise...</small></p>
+        </script>
+        </section>
+
+        <section>
+          <h2>Domene-recap</h2>
+          <img width="900" height="530" src="assets/domain-model.png" alt="Domene-modell">
+        </section>
+        </section>
+
 
         <section data-markdown data-background="#FFEA98">
         <script type="text/template">
           ## Løysinga på minne-problemet
           * Må datatypen vere søkbar?
             * gjer som før*<span class="fragment"> -> owner, animal, enrollmentPeriod</span>*
-           <pre class="fragment"><code>mapO.put(ownerKey, OwnerItem);
-mapA.put(animalKey, AnimalItem);
-mapEP.put(epKey1, EPItem);
-mapEP.put(epKey2, EPItem);
+           <pre class="fragment"><code>ownerMap.put(ownerKey, OwnerItem);
+animalMap.put(animalKey, AnimalItem);
+epMap.put(epKey1, EPItem);
+epMap.put(epKey2, EPItem);
           </code></pre>
           * Ellers:
             * so få entries som mulig
             * bruk collections*<span class="fragment"> -> resten</span>*
-          <pre class="fragment"><code>mapM.put(animalKey, List&lt;MilkSampleItem>);
-mapP.put(animalKey, List&lt;ParturitionItem>);
+          <pre class="fragment"><code>milkSampleMap.put(animalKey, List&lt;MilkSampleItem>);
+parturitionMap.put(animalKey, List&lt;ParturitionItem>);
           </code></pre>
         </script>
         </section>
@@ -176,31 +177,84 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
           <li class="fragment">kvar <strong>map</strong> har sin egen konfig</li>
           <li class="fragment">vert <strong>trigga</strong> ved første map-aksess</li>
         </ul>
-       <pre class="fragment"><code data-trim contenteditable>@Bean public MapConfig enrollmentPeriodItemsMap() {
-    MapLoader&lt;K, V&gt; loader = new EnrollmentPeriodItemJdbcLoader(db);
-    return new MapConfig()
-        .setName("EnrollmentPeriodItems")
-        .setBackupCount(0)
-        .setAsyncBackupCount(0)
-        .setInMemoryFormat(BINARY)
-        .setStatisticsEnabled(true)
-        .setMapStoreConfig(new MapStoreConfig()
-            .setClassName(EnrollmentPeriodItems.name())
-            .setEnabled(true)
-            .setImplementation(loader)
-        )
-        .addMapIndexConfig(new MapIndexConfig("ownerId", false))        // usortert
-        .addMapIndexConfig(new MapIndexConfig("animalId", false))
-        .addMapIndexConfig(new MapIndexConfig("enrollmentDate", true)); // sortert
+        </section>
+
+        <section>
+          <h2>Node- og cluster-start</h2>
+          <ul>
+            <li>Main-metode</li>
+            <li>Spring og JavaConfig</li>
+          </ul>
+          <pre class="small"><code data-trim>public final class Server {
+    public static void main(String[] args) {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
+        Node node = ctx.getBean(Node.class);
+        if (toBoolean(System.getProperty("hz.init"))) {
+            node.touch();
+        }
+    }
+}</pre></code>
+        </section>
+
+        <section>
+          <h2>JavaConfig</h2>
+          <pre class="medium"><code data-trim contenteditable>@Configuration
+@Import( { MapLoaderConfig.class, GridEnvConfig.class, DataSourceConfig.class } )
+@ComponentScan("no.tine.reku.jobs.hz")
+public class ServerConfig {
+
+    @Autowired private MapLoaderConfig mapLoaderConfig;
+    @Autowired private Properties hzProperties;
+
+    @Value("#{hzProperties['hz.is.local']}")
+    private boolean localMode;
+
+    @Bean public HazelcastInstance hazelcastInstance() {
+        if (localMode) {
+            return withLocalConfig(mapLoaderConfig, LOCAL_CLUSTER_NAME).createInstance();
+        } else {
+            return withDistributedConfig(mapLoaderConfig).createInstance();
+        }
+    }
+
 }</code></pre>
-        </script>
+        </section>
+
+        <section>
+          <h2>MapConfig</h2>
+          <pre class="medium"><code data-trim contenteditable>@Configuration
+public class MapLoaderConfig {
+
+    @Autowired private DataSource dataSource; 
+
+    @Bean public MapConfig enrollmentPeriodItemsMap() {
+        MapLoader&lt;K, V&gt; loader = new EnrollmentPeriodItemJdbcLoader(dataSource);
+        return new MapConfig()
+            .setName("EnrollmentPeriodItems")
+            .setBackupCount(0)
+            .setAsyncBackupCount(0)
+            .setInMemoryFormat(BINARY)
+            .setStatisticsEnabled(true)
+            .setMapStoreConfig(new MapStoreConfig()
+                .setClassName(EnrollmentPeriodItems.name())
+                .setEnabled(true)
+                .setImplementation(loader)
+            )
+            .addMapIndexConfig(new MapIndexConfig("ownerId", false))        // usortert
+            .addMapIndexConfig(new MapIndexConfig("animalId", false))
+            .addMapIndexConfig(new MapIndexConfig("enrollmentDate", true)); // sortert
+    }
+
+   // og sjølvsagt config for resten...
+
+}</code></pre>
         </section>
 
         <section>
         <h2>MapLoader</h2>
         <p>MapLoader-interfacet ser forresten slik ut:</p>
         <ul>
-          <li>loadAllKeys() for å Laste alle nøklar</li>
+          <li>loadAllKeys() for å laste alle nøklar</li>
           <li>loadAll(keys) for å laste data for nøklar som er eigd av noden</li>
           <li>load(key) for å prøve å laste data om nøkkelen manglar</li>
         </ul>
@@ -216,6 +270,7 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
     V load(K key);
 
 }</pre></code>
+        </section>
         </section>
 
         <section>
@@ -233,12 +288,62 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
           <p style="margin-top: 30px; font-size: 0.7em;" class="fragment">Men vi er framleis ikkje i produsjon..</p>
         </ul>
         </section>
+
+        <section>
+        <section data-markdown>
+        <script type="text/template">
+          ## Partisjonering og gruppering
+          * Innslag med samme nøkkel havnar på samme node
+          * Interface PartitionAware sørgar for co-lokalisering av data som høyrer saman
+
+          ```
+          public class MilkControlKey implements PartitionAware<OwnerKey> {
+            private long id;
+            private long ownerId;
+
+            public MilkControlKey(long id, long ownerId) {
+              this.id = id;
+              this.ownerId = ownerId;
+            }
+
+            @Override public OwnerKey getPartitionKey() {
+              return new OwnerKey(ownerId);
+            }
+          }
+
+          ```
+        </script>
         </section>
+
+        <section data-transition="linear">
+          <h2>Gruppering</h2>
+          <ul>
+            <div class="fragment">
+              <li>Owners på samme node som sine data</li>
+              <ul>
+                <li>MilkControls</li>
+              </ul>
+            </div>
+            <div class="fragment">
+              <li>Animals på samme node som sine data</li>
+              <ul>
+                <li>EnrollmentPeriods, Parturitions, ++</li>
+              </ul>
+            </div>
+            <li class="fragment bigairtop">Umulig å få dyr og produsentar på samme node</li>
+            <li class="fragment">for dyr blir solgt mellom buskapane.</li>
+          </ul>
+        </section>
+        </section>
+
 
         <section>
         <section>
         <h2>Repositories</h2>
-        <p>Vert oppretta vha konstruktør som tek inn ein HazelcastInstance</p>
+        <ul>
+          <li>Konstruktør tek inn hazelcastInstance</li>
+          <li>Oppretter maps</li>
+        </ul>
         <pre><code>public class AnimalRepositoryHz implements AnimalRepository {
 
     private final IMap&lt;AnimalKey, AnimalItem&gt; animalsMap;
@@ -257,7 +362,7 @@ mapP.put(animalKey, List&lt;ParturitionItem>);
         </section>
         <section>
         <h2>Bygg opp komplekst objekt vha mapper</h2>
-        <pre><code class="medium" data-trim contenteditable>@Override public AnimalCalculationItem findAnimal(long animalId, MapAnimalCollections mapper) {
+        <pre class="medium"><code data-trim contenteditable>@Override public AnimalCalculationItem findAnimal(long animalId, MapAnimalCollections mapper) {
 
     AnimalKey key = new AnimalKey(animalId); // kun wrapping av long
     AnimalCalculationItem animal = new AnimalCalculationItem(
@@ -281,17 +386,17 @@ private static Predicate isId(long id) {
         </section>
 
         <section>
-        <h2>Lokalt eller distribuert</h2>
-        <p>Lokalt:</p>
-        <pre><code class="medium">Predicate animalPredicate = isAnimalId(animal.getId());
+          <h2>Lokalt eller distribuert</h2>
+          <p>Lokalt:</p>
+          <pre class="medium"><code>Predicate animalPredicate = isAnimalId(animal.getId());
 for (EnrollmentPeriodKey key : epsMap.localKeySet(animalPredicate)) {
     animal.getEnrollmentPeriods().add(epsMap.get(key));
 }</pre></code>
-       <p>Distribuert:</p>
-        <pre><code class="medium">Predicate animalPredicate = isAnimalId(animal.getId());
+         <p>Distribuert:</p>
+          <pre class="medium"><code>Predicate animalPredicate = isAnimalId(animal.getId());
 animal.getEnrollmentPeriods().addAll(epsMap.values(animalPredicate));</pre></code>
-        <p>Begge deler:</p>
-        <pre><code class="medium">private AnimalCalculationItem addUsingGetOnKey(AnimalCalculationItem animal, AnimalKey animalKey, MapAnimalCollections mapper) {
+          <p>Begge deler:</p>
+          <pre class="medium"><code>private AnimalCalculationItem addUsingGetOnKey(AnimalCalculationItem animal, AnimalKey animalKey, MapAnimalCollections mapper) {
     if (mapper.isMapParturition()) {
         animal.getParturitions().addAll(parturitionsMap.get(animalKey));
     }
@@ -300,19 +405,117 @@ animal.getEnrollmentPeriods().addAll(epsMap.values(animalPredicate));</pre></cod
     }
     return animal;
 }</pre></code>
-         </section>
+        </section>
+
+        <section>
+          <h2>Finn data</h2>
+        <pre class="medium"><code>public Set&lt;EnrollmentPeriodItem&gt; findEnrollmentPeriods(long ownerId, LocalDate from, LocalDate to) {
+    EntryObject e = new PredicateBuilder().getEntryObject();
+    Predicate predicate = e.get("ownerId").equal(ownerId).and(e.get("enrollmentDate").lessThan(to));
+    return newHashSet(filter( // Guava
+            epsMap.values(predicate),
+            new EnrolledInCalculationPeriodPredicate(from, to)
+    ));
+}
+
+</pre></code>
+          <pre class="medium"><code>public &lt;T extends EventItem&gt; Collection&lt;T&gt; findEvents(long animalId, Class&lt;T&gt; eventClass) {
+    AnimalKey key = new AnimalKey(animalId);
+    if (eventClass == ParturitionItem.class) {
+        return (Collection&lt;T&gt; parturitionsMap.get(key);
+    } else if (eventClass == MilkSampleItem.class) {
+        return (Collection&lt;T&gt; milkSamplesMap.get(key);
+    }
+    throw new MappingException("Not supported [" + eventClass.getSimpleName() + "]");
+}
+
+</pre></code>
+        </section>
+        </section>
+
+        <section> 
+          <h2>Services</h2>
+          <ul>
+            <li></li>
+            <li></li>
+          </ul>
+        </section>
+
+        <section> 
+        <section> 
+          <h2>Køyring av jobbar</h2>
+          <ul>
+            <li>IExecutorService for å sende jobbar til griden</li>
+            <li>Callable og Runnable</li>
+            <ul>
+              <li>PartitionAware&lt;Key&gt;</li>
+              <li>HazelcastInstanceAware</li>
+              <li>Serializable</li>
+            </ul>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Beregnings-eksempel</h3>
+          <pre class="medium"><code>public class CalculateYield implements Callable&lt;Yield&gt;, 
+            PartitionAware&lt;AnimalKey&gt;, HazelcastInstanceAware, Serializable {
+
+    private final long animalId; 
+    private transient YieldCalculationService service;
+
+    public CalculateAnimalYieldAnnual(long animalId) {
+        this.animalId = animalId;
+    }
+
+    @Override public Yield call() {
+        return service.calculateYield(animalId);
+    }
+
+    @Override public AnimalKey getPartitionKey() {
+        return new AnimalKey(animalId);
+    }
+
+    @Override public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
+        this.service = new YieldCalculationService(
+                new YieldCalculationRepository(hazelcastInstance)
+        );
+    }
+}</pre></code>
+        </section>
+
+        <section>
+          <h3>Eksekvering frå klient</h3>
+          <ul class="medium">
+            <li>ClientConfig</li>
+            <li>Hent ut executorService</li>
+            <li>Send inn jobb</li>
+          </ul>
+          <pre class="medium"><code>HazelcastInstance client = HazelcastClient.newHazelcastClient(new ClientConfig());
+
+IExecutorService executorService = client.getExecutorService("default");
+
+// callable blir sendt til noden som eig dyret
+Future&lt;Yield&gt; result = executorService.submit(new CalculateYield(1337L));
+
+try {
+    Yield yield = future.get();
+} catch (Exception e) { // InterruptedException, ExecutionException
+    // håndter feil
+}</pre></code>
+        </section>
+
         </section>
 
         <section> 
         <h2>Relasting av data</h2>
         <ul>
-          <li>Sender en jobb til noden</li>
+          <li>Sender ein jobb til noden</li>
           <ul>
             <li>fjernar alle gamle data</li>
             <li>lastar alle eksisterande data på nytt</li>
           </ul>
         </ul>
-        <pre><code class="medium">public class AnimalReloader implements Callable&lt;Boolean&gt; HazelcastInstanceAware, 
+        <pre class="medium"><code>public class AnimalReloader implements Callable&lt;Boolean&gt; HazelcastInstanceAware, 
             PartitionAware&lt;AnimalKey&gt; Serializable {
     protected final CalculationItemIdentifier&lt;AnimalKey&gt; reloads;
     protected transient HazelcastInstance hazelcastInstance;
@@ -322,7 +525,7 @@ animal.getEnrollmentPeriods().addAll(epsMap.values(animalPredicate));</pre></cod
     }
     @Override public Boolean call() {
         reloadForMainKey(AnimalItems);
-        reloadItems(EnrollmentPeriodItems);       // en entry per item
+        reloadItems(EnrollmentPeriodItems);       // ein entry per item
         reloadForMainKey(ParturitionCollections); // resten er collections
         reloadForMainKey(MilkSampleCollections);
         reloadForMainKey(ConcentrateCollections);
@@ -345,31 +548,6 @@ animal.getEnrollmentPeriods().addAll(epsMap.values(animalPredicate));</pre></cod
 
         <section data-markdown data-background="#007777">
         <script type="text/template">
-        </script>
-        </section>
-
-        <section data-markdown>
-        <script type="text/template">
-          ## Partisjonering og gruppering
-          * Innslag med samme nøkkel havnar på samme node
-          * Interface PartitionAware sørgar for co-lokalisering av data som høyrer saman
-
-          ```
-          public class MilkControlKey implements PartitionAware<OwnerKey> {
-            private long id;
-            private long ownerId;
-
-            public MilkControlKey(long id, long ownerId) {
-              this.id = id;
-              this.ownerId = ownerId;
-            }
-
-            @Override public OwnerKey getPartitionKey() {
-              return new OwnerKey(ownerId);
-            }
-          }
-
-          ```
         </script>
         </section>
 
