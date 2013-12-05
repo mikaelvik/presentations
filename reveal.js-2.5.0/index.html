@@ -91,10 +91,11 @@
         <section data-markdown>
         <script type="text/template">
           ## Serialisering
+          * Hazelcast støttar pluggable serialisering
           * Alt som blir lagra på griden: *Kryo*
             * kjapt, liten footprint
             * ødela immutability 
-              * <small>(fjerna final på felt, la til default-konstruktør)</small>
+              * <small>(måtte fjerne final på felt, legge til default-konstruktør)</small>
           * Alt anna: Standard Java-serialisering
         </script>
         </section>
@@ -111,7 +112,7 @@
             <li class="fragment">I starten låg alle objekt i maps som egne entries,</li>
             <ul class="fragment">
               <li>MEN det blir lagra tillegginfo om kvar einaste map-entry
-              <li>det føkka for den løysinga</li>
+              <li>det føkka det til for den løysinga</li>
               <li class="fragment">ein node med 500mb data brukte <strong>4gig med minne..</strong></li>
             </ul>
           </ul>
@@ -135,14 +136,10 @@
           <p class="fragment" style="margin-top:50px"><small>Meir om den ulempa etter ei reprise...</small></p>
         </script>
         </section>
-
-        <section>
-          <h2>Domene-recap</h2>
-          <img width="900" height="530" src="assets/domain-model.png" alt="Domene-modell">
-        </section>
-        </section>
+       </section>
 
 
+       <section>
         <section data-markdown data-background="#FFEA98">
         <script type="text/template">
           ## Løysinga på minne-problemet
@@ -163,13 +160,19 @@ parturitionMap.put(animalKey, List&lt;ParturitionItem>);
         </section>
 
         <section>
+          <h2>Domene-recap</h2>
+          <img width="900" height="530" src="assets/domain-model.png" alt="Domene-modell">
+        </section>
+        </section>
+
+         <section>
         <section>
         <h2>Oppstart og innlasting</h2>
         <p>Vi konfigurerer opp nodane vha Spring og JavaConfig:</p>
         <ul>
-          <li class="fragment">datasource er basert på <strong>jdbc</strong></li>
+          <li class="fragment">datasource er <strong>jdbc</strong></li>
           <li class="fragment">kvar <strong>map</strong> har sin egen konfig</li>
-          <li class="fragment">vert <strong>trigga</strong> ved første map-aksess</li>
+          <li class="fragment">data-lasting vert <strong>trigga</strong> ved første map-aksess</li>
         </ul>
         </section>
 
@@ -227,7 +230,7 @@ public class MapLoaderConfig {
     @Bean public MapConfig enrollmentPeriodItemsMap() {
         MapLoader&lt;K, V&gt; loader = new EnrollmentPeriodItemJdbcLoader(dataSource);
         return new MapConfig()
-            .setName("EnrollmentPeriodItems")
+            .setName("EnrollmentPeriodItems")                // har egentlig inlina ei konfig-metode
             .setBackupCount(0)
             .setAsyncBackupCount(0)
             .setInMemoryFormat(BINARY)
@@ -260,7 +263,7 @@ public class MapLoaderConfig {
     /** Loads all of the keys from the store.  */
     Set&lt;K&gt; loadAllKeys();
 
-    /** Loads given keys. */
+    /** Loads given keys owned by the node. */
     Map&lt;K, V&gt; loadAll(Collection&lt;K&gt; keys);
 
     /** Loads the value of a given key. */
@@ -275,14 +278,17 @@ public class MapLoaderConfig {
         <ul>
           <li class="fragment">Vi har gått for null replikering</li>
           <li class="fragment">Griden er <strong>ikkje</strong> master for data</li>
+          <ul>
+            <li class="fragment">det er det relasjonsbasa som er</li>
+          </ul>
           <li class="fragment">Dette gir oss:</li>
           <ul>
             <li class="fragment">raskare oppstart</li>
             <li class="fragment">mindre overhead mellom nodane</li>
             <li class="fragment">lavare minnebruk</li>
           </ul>
-          <li class="fragment">Ulempe: ved node-feil må vi restarte heile clusteret</li>
-          <p style="margin-top: 30px; font-size: 0.7em;" class="fragment">Men vi er framleis ikkje i produsjon..</p>
+          <li class="fragment airtop">Ulempe: ved node-feil må vi restarte heile clusteret</li>
+          <p style="font-size: 0.7em;" class="fragment bigairtop">Men vi er framleis ikkje i produsjon..</p>
         </ul>
         </section>
 
@@ -294,6 +300,7 @@ public class MapLoaderConfig {
 
           * Innslag med samme nøkkel havnar på samme node
           * Interface PartitionAware sørgar for co-lokalisering av data som høyrer saman
+            * Difor har vi wrappa alle ider i egne Key-objekt
 
           </div>
           ```
@@ -351,7 +358,7 @@ public class MapLoaderConfig {
     private final IMap&lt;EnrollmentPeriodKey, EnrollmentPeriodItem&gt; epsMap;
     private final IMap&lt;AnimalKey, List&lt;ParturitionItem&gt&gt; parturitionsMap;
     
-    public AnimalCalculationItemRepositoryHz(HazelcastInstance hzInstance) {
+    public AnimalRepositoryHz(HazelcastInstance hzInstance) {
         this.animalsMap = hzInstance.getMap(AnimalItems.name());
         this.epsMap = hzInstance.getMap(EnrollmentPeriodItems.name());
         this.parturitionsMap = hzInstance.getMap(ParturitionCollections.name());
@@ -437,9 +444,30 @@ animal.getEnrollmentPeriods().addAll(epsMap.values(animalPredicate));</pre></cod
         <section> 
           <h2>Services</h2>
           <ul>
-            <li></li>
-            <li></li>
+            <li>Tek inn avhengigheter i konstruktøren</li>
+            <li>Ikkje Spring, blir oppretta på hz-noden</li>
           </ul>
+          <pre class="medium"><code>public class YieldCalculationService { 
+
+    private final AnimalRepositoryHz animalRepositoryHz;
+
+    public YieldCalculationService(AnimalRepositoryHz animalRepositoryHz) {
+        this.animalRepositoryHz = animalRepositoryHz;
+    }
+
+    public Yield calculateYield(long animalId) {
+        MilkTimeLine timeLine = buildTimeLine(animalId);         // brukar repository
+        CalculationPeriod cp = resolveCalculationPeriod();
+        Yield  yield = new Yield();
+        for (Segment segment : timeLine.getSegments()) {
+            yield.add(YieldCalculator.calculateYield(segment, cp));
+        }
+        return yield;
+    }
+
+}
+
+</pre></code>
         </section>
 
         <section> 
@@ -454,6 +482,27 @@ animal.getEnrollmentPeriods().addAll(epsMap.values(animalPredicate));</pre></cod
               <li>Serializable</li>
             </ul>
           </ul>
+        </section>
+
+        <section>
+          <h3>Eksekvering frå klient</h3>
+          <ul class="medium">
+            <li>ClientConfig</li>
+            <li>Hent ut executorService</li>
+            <li>Send inn jobb</li>
+          </ul>
+          <pre class="medium"><code>HazelcastInstance client = HazelcastClient.newHazelcastClient(new ClientConfig());
+
+IExecutorService executorService = client.getExecutorService("default");
+
+// callable blir sendt til noden som eig dyret
+Future&lt;Yield&gt; result = executorService.submit(new CalculateYield(1337L));
+
+try {
+    Yield yield = future.get();
+} catch (Exception e) { // InterruptedException, ExecutionException
+    // håndter feil
+}</pre></code>
         </section>
 
         <section>
@@ -483,28 +532,6 @@ animal.getEnrollmentPeriods().addAll(epsMap.values(animalPredicate));</pre></cod
     }
 }</pre></code>
         </section>
-
-        <section>
-          <h3>Eksekvering frå klient</h3>
-          <ul class="medium">
-            <li>ClientConfig</li>
-            <li>Hent ut executorService</li>
-            <li>Send inn jobb</li>
-          </ul>
-          <pre class="medium"><code>HazelcastInstance client = HazelcastClient.newHazelcastClient(new ClientConfig());
-
-IExecutorService executorService = client.getExecutorService("default");
-
-// callable blir sendt til noden som eig dyret
-Future&lt;Yield&gt; result = executorService.submit(new CalculateYield(1337L));
-
-try {
-    Yield yield = future.get();
-} catch (Exception e) { // InterruptedException, ExecutionException
-    // håndter feil
-}</pre></code>
-        </section>
-
         </section>
 
         <section> 
@@ -552,18 +579,16 @@ try {
         <h2>Enhetstestar</h2>
         <ul>
           <li>Somme testar: Spring og lokale instansar</li>
-          <li>Andre testar: ikkje Spring</li>
+          <li>Andre testar: ikkje Spring, men lokale instansar</li>
           <li>Dei fleste testane: kun pojos og mocks</li>
-          <li class="fragment airtop">Fokus på fart...</li>
+          <li class="fragment airtop">Fokus på raske testar...</li>
         </ul>
         </section>
 
         <section data-background="#CCEBFF">
         <h2>Integrasjonstestar</h2>
         <ul>
-          <li>Lastar inn ei minnebase (med H2)</li>
-          <li>Repeterbart</li>
-          <li>Kan køyrast offline</li>
+          <li>Lastar inn ei minnebase (H2)</li>
           <li>Statiske klasse-hierarki</li>
           <ul class="schmedium">
             <li>EmbeddedDatabaseEnabler</li>
@@ -571,6 +596,8 @@ try {
             <li>GridClientEnabler</li>
             <li>EtEllerAnnaBørFunkeSlikIT</li>
           </ul>
+          <li>Repeterbart</li>
+          <li>Kan køyrast offline</li>
           <li>Sparer oppstart-kostnad ved køyring av alle testane</li>
         </ul>
         </section>
@@ -586,9 +613,18 @@ try {
           * Blir brukt som ei tjeneste
             * køyre beregningar
             * hente ut data
-          * Håndterer ikkje persistering
+          * Den håndterer ikkje persistering
             * har tankar om korleis det bør/kan gjerast
             * har ikkje komt så langt enno
+        </section>
+
+        <section>
+          <h2>Klientar</h2>
+          <ul>
+            <li>Rest-api</li>
+            <li>Core-app</li>
+            <li>Batch-app</li>
+          </ul>
         </section>
 
         <section>
@@ -616,15 +652,15 @@ try {
           <h1>Haudeverk</h1>
           <p>Sjølv om Hazelcast har funka svært bra og tidvis er ei fryd å jobbe med so:</p>
           <ul class="schmedium">
-            <li>Serialiserling kan vere et helvete</li>
+            <li>Serialisering kan vere et helvete</li>
             <ul>
               <li>EOFException mellom nodane,</li>
-              <li> du ser kun serialiserte data</li>
+              <li> du ser kun serialisert versjon av data</li>
             </ul>
-            <li>Bugs innført mellom versjonar</li>
-            <li>Feil som blir svelgt av rammeverket</li>
+            <li>Bugs dukkar opp mellom versjonar</li>
+            <li>Feil blir svelgt av rammeverket</li>
             <li>Utdatert og feilaktig dokumentasjon</li>
-            <li>Local mode som var visst ikkje heilt local likevel!!</li>
+            <li>Local mode som ikkje var heilt local likevel!!</li>
             <div class="fragment">
               <li class="bigairtop"><strong>Pluss</strong> for kjapp feedback og rask bug-fiksing</li>
               <li>Stort sett utfyllande og god dokumentasjon</li>
@@ -651,6 +687,9 @@ try {
     // frå 15 sekund til 15 millisekun 
 }</pre></code>
          <li>Pass på å få med nødvendige indeksar</li>
+        <ul class="fragment schmedium">
+          <li>Du bør i alle fall ikkje kommentere dei ut og gløyme at du har gjort det</li>
+        </ul>
         </ul>
         </section>
         </section>

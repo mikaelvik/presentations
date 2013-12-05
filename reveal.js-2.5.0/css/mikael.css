@@ -31,11 +31,11 @@ ul.schmedium, div.schmedium {
   line-height: 125%;
 }
 
-li.bigairtop {
+li.bigairtop, p.bigairtop {
   margin-top: 50px;
 }
 
-li.airtop {
+li.airtop, p.airtop {
   margin-top: 30px;
 }
 
