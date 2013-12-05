@@ -30,14 +30,8 @@
 
     <div class="reveal">
 
-      <!-- Any section element inside of this container is displayed as a slide -->
       <div class="slides">
-        <section>
-        <h2>Huskeliste</h2>
-        <ul>
-          <li>Ytelse, lasting av data, køyring av jobbar</li>
-        </ul>
-        </section>
+
         <section>
         <h1>Hazelcast Erfaringsrapport</h1>
         <h3></h3>
@@ -179,13 +173,13 @@ parturitionMap.put(animalKey, List&lt;ParturitionItem>);
         </ul>
         </section>
 
-        <section>
+        <section data-transition="linear">
           <h2>Node- og cluster-start</h2>
           <ul>
             <li>Main-metode</li>
             <li>Spring og JavaConfig</li>
           </ul>
-          <pre class="small"><code data-trim>public final class Server {
+          <pre class="medium"><code data-trim>public final class Server {
     public static void main(String[] args) {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
         Node node = ctx.getBean(Node.class);
@@ -194,6 +188,9 @@ parturitionMap.put(animalKey, List&lt;ParturitionItem>);
         }
     }
 }</pre></code>
+        <pre class="medium"><code>&gt; java --classpath "hz.jar:lib/*" -Denvironment=qa                reku.hz.Server 
+&gt; java --classpath "hz.jar:lib/*" -Denvironment=qa -Dhz.init=true reku.hz.Server # trigging av datalasting
+</pre></code>
         </section>
 
         <section>
@@ -277,7 +274,7 @@ public class MapLoaderConfig {
         <h2>Backups og replikering</h2>
         <ul>
           <li class="fragment">Vi har gått for null replikering</li>
-          <li class="fragment">Griden er ikkje master for data</li>
+          <li class="fragment">Griden er <strong>ikkje</strong> master for data</li>
           <li class="fragment">Dette gir oss:</li>
           <ul>
             <li class="fragment">raskare oppstart</li>
@@ -293,9 +290,12 @@ public class MapLoaderConfig {
         <section data-markdown>
         <script type="text/template">
           ## Partisjonering og gruppering
+          <div class="schmedium">
+
           * Innslag med samme nøkkel havnar på samme node
           * Interface PartitionAware sørgar for co-lokalisering av data som høyrer saman
 
+          </div>
           ```
           public class MilkControlKey implements PartitionAware<OwnerKey> {
             private long id;
@@ -332,6 +332,7 @@ public class MapLoaderConfig {
             </div>
             <li class="fragment bigairtop">Umulig å få dyr og produsentar på samme node</li>
             <li class="fragment">for dyr blir solgt mellom buskapane.</li>
+            <li class="fragment">og nøklane i map'ane ville blitt for komplekse</li>
           </ul>
         </section>
         </section>
@@ -508,12 +509,14 @@ try {
 
         <section> 
         <h2>Relasting av data</h2>
-        <ul>
+        <ul class="schmedium">
           <li>Sender ein jobb til noden</li>
           <ul>
+            <li>den har kjennskap til nødvendige nøklar</li>
             <li>fjernar alle gamle data</li>
             <li>lastar alle eksisterande data på nytt</li>
           </ul>
+          <li>Enklare enn å kun laste/fjerne det som er nødvendig, og det går kjapt nok</li>
         </ul>
         <pre class="medium"><code>public class AnimalReloader implements Callable&lt;Boolean&gt; HazelcastInstanceAware, 
             PartitionAware&lt;AnimalKey&gt; Serializable {
@@ -541,30 +544,117 @@ try {
 }</pre></code>
         </section> 
 
-        <section data-markdown data-background="#007777">
-        <script type="text/template">
-        </script>
+        <section data-background="#CCEBFF">
+        <h1>Testing</h1>
         </section>
 
-        <section data-markdown data-background="#007777">
-        <script type="text/template">
-        </script>
+        <section data-background="#CCEBFF">
+        <h2>Enhetstestar</h2>
+        <ul>
+          <li>Somme testar: Spring og lokale instansar</li>
+          <li>Andre testar: ikkje Spring</li>
+          <li>Dei fleste testane: kun pojos og mocks</li>
+          <li class="fragment airtop">Fokus på fart...</li>
+        </ul>
         </section>
 
-          </code></pre>
+        <section data-background="#CCEBFF">
+        <h2>Integrasjonstestar</h2>
+        <ul>
+          <li>Lastar inn ei minnebase (med H2)</li>
+          <li>Repeterbart</li>
+          <li>Kan køyrast offline</li>
+          <li>Statiske klasse-hierarki</li>
+          <ul class="schmedium">
+            <li>EmbeddedDatabaseEnabler</li>
+            <li>HazelcastEnabler</li>
+            <li>GridClientEnabler</li>
+            <li>EtEllerAnnaBørFunkeSlikIT</li>
+          </ul>
+          <li>Sparer oppstart-kostnad ved køyring av alle testane</li>
+        </ul>
+        </section>
+
+        <section data-background="#8F2400" data-transition="zoom" data-transition-speed="slow">
+          <h1 style="color: black;">Demo</h1>
         </section>
 
         <section data-markdown>
           ## Prosjektstatus
-          * Avlastar relasjonsbasa
+          * Griden avlastar relasjonsbasa
           * Data blir kontinuerlig synkronisert mellom grid og db 
           * Blir brukt som ei tjeneste
             * køyre beregningar
             * hente ut data
           * Håndterer ikkje persistering
             * har tankar om korleis det bør/kan gjerast
+            * har ikkje komt så langt enno
         </section>
 
+        <section>
+        <h2>Ytelse</h2>
+        <p>Har framleis ikkje fått last-testa ytelsen, men:</p>
+        <ul>
+          <li>Heile clusteret lastar alle data på under 10 minutt</li>
+          <li>Beregning for enkelt-dyr på 20-30ms</li>
+          <li>Beregning for produsent med 300 dyr på 500ms</li>
+          <li>Relasting av data på ~25ms</li>
+        </ul>
+        </section>
+
+        <section>
+        <h2>Deployment</h2>
+        <ul>
+          <li>CI bygger artefakt vha mvn-assembly-plugin</li>
+          <li>Scp til grid-clusteret (admin-bruker)</li>
+          <li>Diverse bash-skript står kjører ssh for stop, start og status</li>
+        </ul>
+        </section>
+
+        <section>
+        <section>
+          <h1>Haudeverk</h1>
+          <p>Sjølv om Hazelcast har funka svært bra og tidvis er ei fryd å jobbe med so:</p>
+          <ul class="schmedium">
+            <li>Serialiserling kan vere et helvete</li>
+            <ul>
+              <li>EOFException mellom nodane,</li>
+              <li> du ser kun serialiserte data</li>
+            </ul>
+            <li>Bugs innført mellom versjonar</li>
+            <li>Feil som blir svelgt av rammeverket</li>
+            <li>Utdatert og feilaktig dokumentasjon</li>
+            <li>Local mode som var visst ikkje heilt local likevel!!</li>
+            <div class="fragment">
+              <li class="bigairtop"><strong>Pluss</strong> for kjapp feedback og rask bug-fiksing</li>
+              <li>Stort sett utfyllande og god dokumentasjon</li>
+            </div>
+          </ul>
+        </section>
+        
+        <section>
+        <h2>Fallgruver</h2>
+        <ul>
+          <li>Det er <strong>ikkje</strong> kun størrelsen på en entry som er viktig</li>
+          <ul>
+            <li>Begrens antall entries</li>
+          </ul>
+          <li>Ikkje gjer følgande:</li>
+          <ul class="fragment schmedium">
+            <li>Heile nøkkelsettet blir henta ut</li>
+            <li>Går fint med 6000 entries, men ikkje med 1.5 millionar</li>
+         </ul>
+          <pre><code>if (animalsMap.localKeySet().contains(new AnimalKey(animalId))) {
+    // we're locals
+}</pre></code>
+          <pre class="fragment"><code>if (!animalsMap.localKeySet(isId(animalId)).isEmpty()) {
+    // frå 15 sekund til 15 millisekun 
+}</pre></code>
+         <li>Pass på å få med nødvendige indeksar</li>
+        </ul>
+        </section>
+        </section>
+        
         <section>
         <h1>Spørsmål.</h1>
         <p class="fragment fade-in">... og swag!</p>

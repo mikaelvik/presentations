@@ -12,6 +12,11 @@ ul.medium {
   line-height: 120%;
 }
 
+ul.schmedium, div.schmedium {
+  font-size: .73em;
+  line-height: 120%;
+}
+
 .reveal pre.medium code {
   font-size: .75em;
   line-height: 125%;
