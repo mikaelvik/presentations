@@ -1,0 +1,51 @@
+.reveal pre code {
+  font-size: .9em;
+  max-height: 500px;
+}
+
+.reveal pre.medium {
+  max-width: 85%;
+}
+
+ul.medium {
+  font-size: .7em;
+  line-height: 120%;
+}
+
+ul.schmedium, div.schmedium {
+  font-size: .73em;
+  line-height: 120%;
+}
+
+.reveal pre.medium code {
+  font-size: .75em;
+  line-height: 125%;
+}
+
+.right {
+  text-align: right;
+}
+.off-right {
+  margin-left: 400px;
+}
+
+.reveal p.small {
+  font-size: .70em;
+}
+
+.reveal pre.small {
+  max-width: 70%;
+}
+
+.reveal pre.small code {
+  font-size: .7em;
+  line-height: 125%;
+}
+
+li.bigairtop, p.bigairtop {
+  margin-top: 50px;
+}
+
+li.airtop, p.airtop {
+  margin-top: 30px;
+}
