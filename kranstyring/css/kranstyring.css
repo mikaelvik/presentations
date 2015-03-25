@@ -22,6 +22,15 @@ ul.schmedium, div.schmedium {
   line-height: 125%;
 }
 
+.left {
+  text-align: left;
+}
+
+.off-left {
+  text-align: left;
+  padding-left: 40px;
+}
+
 .right {
   text-align: right;
 }
@@ -49,3 +58,7 @@ li.bigairtop, p.bigairtop {
 li.airtop, p.airtop {
   margin-top: 30px;
 }
+div.airtop {
+  margin-top: 50px;
+}
+

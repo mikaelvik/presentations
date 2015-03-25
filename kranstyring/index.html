@@ -18,7 +18,8 @@
 
     <!-- If the query includes 'print-pdf', use the PDF print sheet -->
     <script>
-        document.write('<link rel="stylesheet" href="../reveal/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' )
+        document.write('<link rel="stylesheet" href="../reveal/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf'
+                : 'paper' )
                        + '.css" type="text/css" media="print">');
     </script>
 
@@ -42,8 +43,8 @@
         <section>
             <h2>Agenda</h2>
             <ul>
-                <li class="fragment">Observasjonsmøte</li>
                 <li class="fragment">Kransystemet</li>
+                <li class="fragment">Feltobservasjon</li>
                 <li class="fragment">Kommunikasjon</li>
                 <li class="fragment">Ulike jobbar</li>
                 <li class="fragment">Simulator</li>
@@ -56,7 +57,6 @@
         <section>
             <section>
                 <h1>Krana</h1>
-
                 <p>.. ofte kalla kransystemet.</p>
             </section>
 
@@ -65,8 +65,8 @@
                 <script type="text/template">
                     ## Oppbygging
                     * Vi kommuniserer med to modular
-                    * Conveyor
-                    * Crane
+                      * Conveyor
+                      * Crane
                 </script>
             </section>
 
@@ -83,63 +83,200 @@
 
             <section data-markdown>
                 <script type="text/template">
-                    ## Crane
+                    ### Crane
                     * Tre kraner
                     * Hyller for lagring av pallar
-                    * plukkplassar
+                    * Plukkplassar
                 </script>
             </section>
         </section>
 
-
-        <!-- Kommunikasjon -->
-        <section>
+        <section data-background="#FFBEE2">
             <section>
+                <h2>Observasjon i Trondheim</h2>
+
+                <p>.. by Tommy</p>
+            </section>
+
+            <section data-markdown>
                 <script type="text/template">
-                    ## Kommunikasjon
-                    * Meldingar
-                    * Format
-                    * Sockets
+                    ## Oppbygging
+                    * Såg på:
+                    * korleis krana fungerer
+                    * Henta ut informasjon:
+                    * kommunikasjons-logging vha Wireshark
+                    * store mengder Swisslog-dokumentasjon
                 </script>
             </section>
-            <section>
-                <h2>Meldingar</h2>
+
+            <section data-transition="none" data-transition-speed="fast">
+                <h3 class="left">REMA Trondheim</h3>
+                <p class="left">.. conveyor-beltet</p>
+                <div>
+                    <img height="500" src="assets/observation/kran_oversikt.jpg" alt="">
+                </div>
+
+            </section>
+
+            <section data-transition="none" data-transition-speed="fast">
+                <h3 class="left">REMA Trondheim</h3>
+                <p class="left">.. kran og plukkplassar</p>
+                <div>
+                    <img height="500" src="assets/observation/kran_kran.jpg" alt="">
+                    <img height="500" src="assets/observation/kran_plukk1.jpg" alt="">
+                    <img height="500" src="assets/observation/kran_plukk2.jpg" alt="">
+                </div>
             </section>
 
             <section>
-                <h3>Format</h3>
+                <h3>Oversiktsdigram</h3>
+                <img height="450" src="assets/observation/kran_diagram.png" alt="Krandiagram">
+            </section>
+
+            <section>
+                <h3>Wireshark-logging</h3>
+                          <pre class="medium"><code data-trim>
+0.000000000     10.244.21.25    10.245.20.65    <18268MOVE01CRAN30ACP0104693753300010150100ULULULUL000000>
+0.010393000     10.245.20.65    10.244.21.25    <00000CRAN30MOVE01ACK0826800>
+5.294691000     10.245.20.65    10.244.21.25    <00000CON010MOVE01DUM0000000>.................................................................................
+5.337090000     10.244.21.25    10.245.20.65    <00000MOVE01CON010DUA0000000>
+60.016803000    10.245.20.65    10.244.21.25    <10000CRAN30MOVE01DUM0000000>
+60.017539000    10.244.21.25    10.245.20.65    <00000MOVE01CRAN30DUA0000000>
+60.216997000    10.244.21.25    10.245.20.65    <00000MOVE01CRAN30DUM0000000>
+60.218990000    10.245.20.65    10.244.21.25    <00000CRAN30MOVE01DUA0000000>
+60.346877000    10.245.20.65    10.244.21.25    <00000CON010MOVE01DUM0000000>.................................................................................
+60.388508000    10.244.21.25    10.245.20.65    <00000MOVE01CON010DUA0000000>
+73.274069000    10.244.21.25    10.245.20.65    <19246MOVE01CON010IPR100010002001999999990111111000000011100000000000000000000002000370374003165079702---------
+73.355095000    10.245.20.65    10.244.21.25    <00000CON010MOVE01ACK0924600>.................................................................................
+73.554521000    10.245.20.65    10.244.21.25    <14764CON010MOVE01ARQ1000100020010469377401100030024001000137037400316507970200>..............................
+73.601519000    10.244.21.25    10.245.20.65    <00000MOVE01CON010ACK0476400>
+120.225094000   10.245.20.65    10.244.21.25    <10000CRAN30MOVE01DUM0000000>
+120.225487000   10.244.21.25    10.245.20.65    <00000MOVE01CRAN30DUA0000000>
+126.094575000   10.244.21.25    10.245.20.65    <19247MOVE01CON010IPR100010002001999999990111111000000011100000000000000000000002000370446501059500401---------
+126.186385000   10.245.20.65    10.244.21.25    <00000CON010MOVE01ACK0924700>.................................................................................
+126.390771000   10.245.20.65    10.244.21.25    <14765CON010MOVE01ARQ1000100020010469377601100030024001000137044650105950040100>..............................
+126.422132000   10.244.21.25    10.245.20.65    <00000MOVE01CON010ACK0476500>
+128.177015000   10.245.20.65    10.244.21.25    <14106CRAN30MOVE01ARQ0104693777PI01300010290202300020380101REHIFUFU00>
+128.197962000   10.244.21.25    10.245.20.65    <00000MOVE01CRAN30ACK0410600>
+154.010189000   10.244.21.25    10.245.20.65    <18269MOVE01CRAN30CSR01046937771002902LOLOULUL0100000>
+154.024975000   10.245.20.65    10.244.21.25    <00000CRAN30MOVE01ACK0826900>
+156.426288000   10.244.21.25    10.245.20.65    <18270MOVE01CRAN30ACP0104693777300010290200LOLOULUL000000>
+156.442091000   10.245.20.65    10.244.21.25    <00000CRAN30MOVE01ACK0827000>
+156.654247000   10.245.20.65    10.244.21.25    <14107CRAN30MOVE01ARQ0104693777DE01300010290202300020380101REHIFUFU00>
+156.671339000   10.244.21.25    10.245.20.65    <00000MOVE01CRAN30ACK0410700>
+165.951888000   10.244.21.25    10.245.20.65    <19248MOVE01CON010IPR100010002001999999990111111000000011100000000000000000000002000370446501060100218---------
+166.033603000   10.245.20.65    10.244.21.25    <00000CON010MOVE01ACK0924800>.................................................................................
+166.232562000   10.245.20.65    10.244.21.25    <14766CON010MOVE01ARQ1000100020010469378006100030024001000137044650106010021800>..............................
+166.279329000   10.244.21.25    10.245.20.65    <00000MOVE01CON010ACK0476600>
+171.501517000   10.244.21.25    10.245.20.65    <18271MOVE01CRAN30CSR01046937771003801ULULULUL0100000>
+171.506061000   10.245.20.65    10.244.21.25    <00000CRAN30MOVE01ACK0827100>
+179.721397000   10.244.21.25    10.245.20.65    <18272MOVE01CRAN30ACP0104693777300020380100ULULULUL000000>
+179.724837000   10.245.20.65    10.244.21.25    <00000CRAN30MOVE01ACK0827200>
+203.422406000   10.244.21.25    10.245.20.65    <19249MOVE01CON010IPR100010002001999999990111111000000011100000000000000000000002000370446501059500395---------
+203.466651000   10.245.20.65    10.244.21.25    <00000CON010MOVE01ACK0924900>.................................................................................
+203.671800000   10.245.20.65    10.244.21.25    <14767CON010MOVE01ARQ1000100020010469378201100030024001000137044650105950039500>..............................
+203.687574000   10.244.21.25    10.245.20.65    <00000MOVE01CON010ACK0476700>
+224.029603000   10.244.21.25    10.245.20.65    <19250MOVE01CON010ACP1000300240010469377400000>
+224.129346000   10.245.20.65    10.244.21.25    <00000CON010MOVE01ACK0925000>.................................................................................
+224.341457000   10.245.20.65    10.244.21.25    <14768CON010MOVE01ARQ1000300240010469377401100030051004000137037400316507970200>..............................
+224.419517000   10.244.21.25    10.245.20.65    <00000MOVE01CON010ACK0476800>
+239.731837000   10.245.20.65    10.244.21.25    <10000CRAN30MOVE01DUM0000000>
+239.732236000   10.244.21.25    10.245.20.65    <00000MOVE01CRAN30DUA0000000>
+239.831919000   10.244.21.25    10.245.20.65    <00000MOVE01CRAN30DUM0000000>
+239.851739000   10.245.20.65    10.244.21.25    <00000CRAN30MOVE01DUA0000000>
+240.612098000   10.244.21.25    10.245.20.65    <19251MOVE01CON010IPR100010002001999999990111111000000011100000000000000000000002000370446501060100201---------
+240.656074000   10.245.20.65    10.244.21.25    <00000CON010MOVE01ACK0925100>.................................................................................
+240.861561000   10.245.20.65    10.244.21.25    <14769CON010MOVE01ARQ1000100020010469378406100030024001000137044650106010020100>..............................
+240.877367000   10.244.21.25    10.245.20.65    <00000MOVE01CON010ACK0476900>
+241.267195000   10.244.21.25    10.245.20.65    <19252MOVE01CON010ACP1000300240010469377600000></code>
+              </pre>
+            </section>
+        </section>
+
+        <section>
+            <section data-markdown>
+                <script type="text/template">
+                    ## Kommunikasjon
+                    * Meldingsbasert
+                    * Barebone sockets
+                </script>
+            </section>
+
+            <section data-markdown>
+                <script type="text/template">
+                    ### Meldingar
+                    * posisjonsbasert format
+                    * sender ack ved mottak
+                    * synk-sjekk vha sekvensar (FOR ALT)
+                </script>
+            </section>
+
+            <section data-markdown>
+                <script type="text/template">
+                    ### Format
+                    * Alle meldingar har minst:
+                      * til
+                      * frå
+                      * sekvens
+                      * type
+                </script>
+            </section>
+            
+            <section data-markdown>
+                <script type="text/template">
+                    ### Format
+                    * Alle meldingar har minst:
+                      * til
+                      * frå
+                      * sekvens
+                      * type
+                </script>
             </section>
 
             <section>
                 <h3>Sockets</h3>
+                <ul>
+                    <li>kommuniserer med fleire system</li>
+                    <li>lavninvå og upålitelig</li>
+                    <li>meldingar kan forsvinne</li>
+                    <li>vanskelig å teste</li>
+                    <li>.. dette må håndterast</li>
+                    <li class="fragment grow">abstrahér det bort</li>
+                </ul>
             </section>
-
         </section>
 
         <!-- Jobbar -->
         <section>
+            <section data-markdown>
+                <script type="text/template">
+                    ## Jobbar
+                    * Implementert som tilstandsmaskiner
+                </script>
+            </section>
+
             <section>
-                <h2>Jobbar</h2>
+                <h2>VIS KODE FOR EN JOBB</h2>
             </section>
 
             <section>
                 <h2>Flytting (innad i kran)</h2>
-                <img height="530" src="assets/SimpleMoveJob.png" alt="Enkel omflytting">
+                <img height="530" src="assets/flowdiagrams/SimpleMoveJob.png" alt="Enkel omflytting">
             </section>
 
             <section>
                 <h2>Innlagring</h2>
-                <img height="530" src="assets/InJob.png" alt="Enkel omflytting">
+                <img height="530" src="assets/flowdiagrams/InJob.png" alt="Innlagring">
             </section>
 
             <section>
                 <h2>Utlagring</h2>
-                <img height="530" src="assets/OutJob.png" alt="Enkel omflytting">
+                <img height="530" src="assets/flowdiagrams/OutJob.png" alt="Utlagring">
             </section>
 
             <section>
                 <h2>Flytting (mellom kraner)</h2>
-                <img height="530" src="assets/MoveBetweenCranesJob.png" alt="Enkel omflytting">
+                <img height="530" src="assets/flowdiagrams/MoveBetweenCranesJob.png" alt="Flytting mellom kraner">
             </section>
 
         </section>
@@ -157,7 +294,7 @@
 
             <section>
                 <h3>Sync Recovery</h3>
-                <img height="530" src="assets/SyncRecovery.png" alt="Enkel omflytting">
+                <img height="530" src="assets/flowdiagrams/SyncRecovery.png" alt="SyncRecovery">
             </section>
         </section>
 
@@ -190,20 +327,10 @@
                 <li>Main-metode</li>
                 <li>Spring og JavaConfig</li>
             </ul>
-          <pre class="medium"><code data-trim>public final class Server {
-              public static void main(String[] args) {
-              ApplicationContext ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
-              Node node = ctx.getBean(Node.class);
-              if (toBoolean(System.getProperty("hz.init"))) {
-              node.touch();
-              }
-              }
-              }</pre>
-            </code>
         <pre class="medium"><code>&gt; java --classpath "hz.jar:lib/*" -Denvironment=qa reku.hz.Server
             &gt; java --classpath "hz.jar:lib/*" -Denvironment=qa -Dhz.init=true reku.hz.Server # trigging av datalasting
-</pre>
             </code>
+</pre>
         </section>
 
 
