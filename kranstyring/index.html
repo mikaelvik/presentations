@@ -40,87 +40,75 @@
             <p><a href="http://github.com/mikaelvik">Mikael Vik</a> / mv@.driw.no</a></p>
         </section>
 
-        <section>
-            <h2>Agenda</h2>
-            <ul>
-                <li class="fragment">Kransystemet</li>
-                <li class="fragment">Feltobservasjon</li>
-                <li class="fragment">Kommunikasjon</li>
-                <li class="fragment">Ulike jobbar</li>
-                <li class="fragment">Simulator</li>
-                <li class="fragment">Utvikling</li>
-                <li class="fragment">Demo</li>
-                <li class="fragment">Veien vidare</li>
-            </ul>
+        <section data-markdown>
+            <script type="text/template">
+                ## Agenda
+                * Krana
+                * Kommunikasjon
+                * Ulike jobbar
+                * Utvikling
+                * Demo
+                * Testing i Trondheim
+                * Veien vidare
+            </script>
         </section>
 
-        <section>
-            <section>
-                <h1>Krana</h1>
-                <p>.. ofte kalla kransystemet.</p>
-            </section>
-
-
-            <section data-markdown>
-                <script type="text/template">
-                    ## Oppbygging
-                    * Vi kommuniserer med to modular
-                      * Conveyor
-                      * Crane
-                </script>
-            </section>
-
-            <section data-markdown>
-                <script type="text/template">
-                    ### Conveyor
-                    * Innskanning (frå lageret)
-                    * Heis
-                    * Belte
-                    * Inn og ut av kranene
-                    * Ut-område (til lageret)
-                </script>
-            </section>
-
-            <section data-markdown>
-                <script type="text/template">
-                    ### Crane
-                    * Tre kraner
-                    * Hyller for lagring av pallar
-                    * Plukkplassar
-                </script>
-            </section>
-        </section>
 
         <section data-background="#FFBEE2">
-            <section>
-                <h2>Observasjon i Trondheim</h2>
 
-                <p>.. by Tommy</p>
+            <section data-background="skyblue">
+                <h1>Krana</h1>
+                <p>eller kransystemet...</p>
+                <img height="300" src="assets/cranebird.jpg" alt="">
+                <img height="300" src="assets/cranebird.jpg" alt="">
+                <img height="300" src="assets/cranebird.jpg" alt="">
             </section>
-
             <section data-markdown>
                 <script type="text/template">
-                    ## Oppbygging
-                    * Såg på:
-                    * korleis krana fungerer
+                    ## Observasjon i Trondheim
+                    .. by Tommy
+                    <br/>
+                    <br/>
+
+                    * Såg på korleis krana fungerer
                     * Henta ut informasjon:
-                    * kommunikasjons-logging vha Wireshark
-                    * store mengder Swisslog-dokumentasjon
+                      * kommunikasjons-logging vha Wireshark
+                      * store mengder Swisslog-dokumentasjon
                 </script>
             </section>
 
-            <section data-transition="none" data-transition-speed="fast">
-                <h3 class="left">REMA Trondheim</h3>
-                <p class="left">.. conveyor-beltet</p>
-                <div>
-                    <img height="500" src="assets/observation/kran_oversikt.jpg" alt="">
-                </div>
-
+            <section>
+                <h2>Oppbygging</h2>
+                <ul>
+                    <li> Vi kommuniserer med to delsystem</li>
+                    <ul>
+                        <li> Conveyor</li>
+                        <ul class="fragment roll-in">
+                            <li> Innskanning (frå lageret)</li>
+                            <li> Heis</li>
+                            <li> Belte</li>
+                            <li> Inn og ut av kranene</li>
+                            <li> Ut-område (til lageret)</li>
+                        </ul>
+                        <li> Crane</li>
+                        <ul class="fragment roll-in">
+                            <li> Tre kraner</li>
+                            <li> Hyller for lagring av pallar</li>
+                            <li> Plukkplassar</li>
+                        </ul>
+                    </ul>
+                </ul>
             </section>
 
-            <section data-transition="none" data-transition-speed="fast">
+            <section>
                 <h3 class="left">REMA Trondheim</h3>
-                <p class="left">.. kran og plukkplassar</p>
+                <p class="left">.. conveyor-beltet</p>
+                <img height="500" src="assets/observation/kran_oversikt.jpg" alt="">
+            </section>
+
+            <section>
+                <h3 class="left">REMA Trondheim</h3>
+                <p class="left">.. kran, hyller og plukkplassar</p>
                 <div>
                     <img height="500" src="assets/observation/kran_kran.jpg" alt="">
                     <img height="500" src="assets/observation/kran_plukk1.jpg" alt="">
@@ -129,13 +117,14 @@
             </section>
 
             <section>
-                <h3>Oversiktsdigram</h3>
-                <img height="450" src="assets/observation/kran_diagram.png" alt="Krandiagram">
+                <h3>Fugleperspektiv?</h3>
+                <img height="600" src="assets/observation/kran_diagram.png" alt="Krandiagram">
             </section>
 
             <section>
-                <h3>Wireshark-logging</h3>
-                          <pre class="medium"><code data-trim>
+                <h3 class="left">Wireshark-logging</h3>
+                <p class="left">... faktisk kommunikasjon mellom Sattstore og Swisslog!!</p>
+                    <pre class="medium"><code data-trim>
 0.000000000     10.244.21.25    10.245.20.65    <18268MOVE01CRAN30ACP0104693753300010150100ULULULUL000000>
 0.010393000     10.245.20.65    10.244.21.25    <00000CRAN30MOVE01ACK0826800>
 5.294691000     10.245.20.65    10.244.21.25    <00000CON010MOVE01DUM0000000>.................................................................................
@@ -196,100 +185,110 @@
         <section>
             <section data-markdown>
                 <script type="text/template">
-                    ## Kommunikasjon
+                    ## Kommunikasjon med krana
                     * Meldingsbasert
                     * Barebone sockets
+                    * <div class="fragment roll-in airtop">ACK ACK ACK</div>
+
                 </script>
             </section>
 
-            <section data-markdown>
-                <script type="text/template">
-                    ### Meldingar
-                    * posisjonsbasert format
-                    * sender ack ved mottak
-                    * synk-sjekk vha sekvensar (FOR ALT)
-                </script>
+            <section>
+                <h2>Meldingar</h2>
+                <ul>
+                    <li> posisjonsbasert format</li>
+                    <ul>
+                        <li>sekvens, til, frå, type</li>
+                    </ul>
+                    <li> sender ack ved mottak</li>
+                    <li> synk-sjekk vha sekvensar (for alt<span class="fragment">, ALT!!</span>)</li>
+                </ul>
+                <br/>
+                          <pre class="airtop"><code data-trim contenteditable>
+10852CRAN30MOVE01ARQ0204491320PI01300049010001300040070401REHIFUFU00
+00000MOVE01CRAN30ACK0085200
+
+10815CON010MOVE01ARQ1000100020010449132401100030024001000137037400316432751400
+00000CRAN30MOVE01ACK0081500
+
+11761MOVE01CON010ACP1000300240010449134198700
+00000CON010MOVE01ACK0176100
+
+11720MOVE01CRAN30ACP0204491345300040170400DOREMIFA321000
+10000CRAN30MOVE01DUM0172000</code></pre>
             </section>
 
-            <section data-markdown>
-                <script type="text/template">
-                    ### Format
-                    * Alle meldingar har minst:
-                      * til
-                      * frå
-                      * sekvens
-                      * type
-                </script>
-            </section>
-            
-            <section data-markdown>
-                <script type="text/template">
-                    ### Format
-                    * Alle meldingar har minst:
-                      * til
-                      * frå
-                      * sekvens
-                      * type
-                </script>
+            <section>
+                <h3>Dei viktigaste meldingstypane</h3>
+                <ul>
+                    <div>
+                        <li>Til kransystemet</li>
+                        <ul>
+                            <li>ARQ (crane): assignment request</li>
+                            <li>ARQ (conveyor): assignment request</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <li>Frå kransystemet</li>
+                        <ul>
+                            <li>IPR: identification point report <i>(sscc har blitt scanna)</i></li>
+                            <li>ACP: assignment completed</li>
+                            <li>CSR: crane status report</li>
+                            <li>POR: position occupied report</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <li>Tilstandskontroll</li>
+                        <ul>
+                            <li>ACK: melding mottatt ok, <i>sendast for (alle) meldingar</i></li>
+                            <li>NCK: melding mottatt FEIL</li>
+                            <li>DUM+DUA: er du der? jada..</li>
+                            <li>SYN: reset sekvens</li>
+                        </ul>
+                    </div>
+                </ul>
+
             </section>
 
             <section>
                 <h3>Sockets</h3>
                 <ul>
-                    <li>kommuniserer med fleire system</li>
                     <li>lavninvå og upålitelig</li>
                     <li>meldingar kan forsvinne</li>
                     <li>vanskelig å teste</li>
+                    <li>kommuniserer med både crane og conveyor</li>
                     <li>.. dette må håndterast</li>
                     <li class="fragment grow">abstrahér det bort</li>
                 </ul>
             </section>
         </section>
 
-        <!-- Jobbar -->
-        <section>
-            <section data-markdown>
-                <script type="text/template">
-                    ## Jobbar
-                    * Implementert som tilstandsmaskiner
-                </script>
-            </section>
-
-            <section>
-                <h2>VIS KODE FOR EN JOBB</h2>
-            </section>
-
-            <section>
-                <h2>Flytting (innad i kran)</h2>
-                <img height="530" src="assets/flowdiagrams/SimpleMoveJob.png" alt="Enkel omflytting">
-            </section>
-
-            <section>
-                <h2>Innlagring</h2>
-                <img height="530" src="assets/flowdiagrams/InJob.png" alt="Innlagring">
-            </section>
-
-            <section>
-                <h2>Utlagring</h2>
-                <img height="530" src="assets/flowdiagrams/OutJob.png" alt="Utlagring">
-            </section>
-
-            <section>
-                <h2>Flytting (mellom kraner)</h2>
-                <img height="530" src="assets/flowdiagrams/MoveBetweenCranesJob.png" alt="Flytting mellom kraner">
-            </section>
-
-        </section>
-
-
         <!-- CraneSystemController -->
         <section>
             <section>
                 <h2>CraneSystemController</h2>
+                <ul>
+                    <li>Styrer all kommunikasjon mot krana</li>
+                    <li>Når alt er ok:</li>
+                    <ul>
+                        <li class="fragment semi-fade-out">ta imot meldingar frå krana</li>
+                        <div class="fragment semi-fade-out">
+                        <li>køyr onestep for alle jobbar</li>
+                        <ul>
+                            <li>send meldingar</li>
+                            <li>be om ressursar</li>
+                        </ul>
+                        </div>
+                        <li class="fragment semi-fade-out">send keep-alive om null aktivitet</li>
+                    </ul>
+                    <li class="fragment airtop roll-in" style="font-size: 1.1em">
+                        Elles: håndtér feil...
+                    </li>
+                </ul>
             </section>
-
             <section>
-                <h3>Køyring av jobbar</h3>
+                <h3>Controller-Flyt</h3>
+                <img height="530" src="assets/CraneSystemController.png" alt="Innlagring">
             </section>
 
             <section>
@@ -299,76 +298,353 @@
         </section>
 
 
-        <section>
-            <section data-markdown data-transition="linear">
+
+        <!-- Jobbar -->
+        <section data-transition="slide">
+            <section data-markdown>
                 <script type="text/template">
-                    ## Eksempel på markdown med kode
-                    * Ekstra informasjon om kvar einaste map-entry **kostar**
-                    ```
-                    EntryView ev = map.getEntryView(key);
-                    ev.getCost();
-                    ev.getCreationTime();
-                    ev.getHits();
-                    ev.getLastAccessTime();
-                    // og meir
-                    ```
-                    * Omlag **100 byte** ekstra for kvar entry!!
-                    <p class="fragment" style="margin-top:50px">
-                        <small>Meir om den ulempa etter ei reprise...</small>
-                    </p>
+                    # Jobbar
+                    * Innlagring
+                    * Utlagring
+                    * Flytt palle innad i kran
+                    * Flytt palle mellom kraner
                 </script>
+            </section>
+            <section data-markdown>
+                <script type="text/template">
+                    ## Ein vanlig dag på jobben
+                    <br/>
+
+                    * Send melding (arq, vent på ack)
+                    * Be om tilgang på ressurs
+                      * <span class="small">foreløpig: kran-inn, kran, kran-ut</span>
+                    * Vent på melding(ar) frå krana
+                    * Klar for neste steg?
+                    * Frigi ressursar
+                    * <div class="fragment airtop grow">.. tilstandsmaskiner</div>
+
+                </script>
+            </section>
+
+            <section data-transition="zoom">
+                <h3>Innlagring - Flyt</h3>
+                <img height="530" src="assets/flowdiagrams/InJob.png" alt="Innlagring">
+            </section>
+
+            <section data-transition="zoom">
+                <h3>Innlagring - Kode</h3>
+                <pre class="large"><code data-trim contenteditable>defineStates(
+    state(INITIAL)
+        .gotoState(MOVING_TO_CHOICEPOS),
+
+    state(MOVING_TO_CHOICEPOS)
+        .onEnter(send(arqToChoicePos()))
+        .transitionWhen(hasReceived(ACP, CON010))
+        .transitionTo(REQUESTING_CRANE_IN),
+
+    state(REQUESTING_CRANE_IN)
+        .onEnter(request(craneInAccess))
+        .withTransitions(
+            transitionTo(MOVING_TO_CRANE_IN).when(granted(craneInAccess)),
+            transitionTo(LOOPING_BACK_TO_CHOICEPOS).when(notGranted(craneInAccess))
+    ),
+
+    state(LOOPING_BACK_TO_CHOICEPOS)
+        .onEnter(send(arqLoopBackToChoicePos()))
+        .transitionWhen(hasReceived(ACP, CON010))
+        .withTransitions(
+            transitionTo(MOVING_TO_CRANE_IN).when(granted(craneInAccess)),
+            transitionTo(LOOPING_BACK_TO_CHOICEPOS).when(notGranted(craneInAccess))
+    ),
+
+    state(MOVING_TO_CRANE_IN)
+        .onEnter(send(arqToCraneIn()))
+        .transitionWhen(
+             hasReceived(POR),
+             hasReceived(ACP, CON010)
+        )
+        .transitionTo(WAITING_ON_CRANE),
+
+    state(WAITING_ON_CRANE)
+        .onEnter(request(craneAccess))
+        .transitionWhen(granted(craneAccess))
+        .transitionTo(PICKING_UP_FROM_CRANE_IN),
+
+    state(PICKING_UP_FROM_CRANE_IN)
+        .onEnter(send(arqPickupFromCrane()))
+        .transitionWhen(
+             hasReceived(CSR),
+             hasReceived(POR),
+             hasReceived(ACP, CRAN30)
+        )
+        .onTransition(release(craneInAccess))
+        .transitionTo(DELIVERING_TO_SHELF),
+
+    state(DELIVERING_TO_SHELF)
+        .onEnter(send(arqDeliverToShelf()))
+        .transitionWhen(
+             hasReceived(CSR),
+             hasReceived(ACP, CRAN30)
+        )
+        .onTransition(release(craneAccess))
+        .transitionTo(DONE),
+
+    state(DONE).endState()
+);
+                </code></pre>
+            </section>
+
+            <section>
+                <h3>Flytdiagram for andre jobbar...</h3>
+            </section>
+            <section>
+                <h3>Flytting (éi kran)</h3>
+                <img height="530" src="assets/flowdiagrams/SimpleMoveJob.png" alt="Enkel omflytting">
+            </section>
+            <section data-transition="zoom">
+                <h3>Innlagring - Kode</h3>
+                <pre class="medium"><code data-trim contenteditable>defineStates(
+    state(INITIAL)
+        .gotoState(WAITING_ON_CRANE),
+
+    state(WAITING_ON_CRANE)
+        .onEnter(request(craneAccess))
+        .transitionWhen(granted(craneAccess))
+        .transitionTo(PICKING_UP_FROM_SHELF),
+
+    state(PICKING_UP_FROM_SHELF)
+        .onEnter(send(arqPickupFromShelf()))
+        .transitionWhen(
+            hasReceived(CSR),
+            hasReceived(ACP)
+        )
+        .transitionTo(DELIVERING_TO_SHELF),
+
+    state(DELIVERING_TO_SHELF)
+        .onEnter(send(arqDeliverToShelf()))
+        .transitionWhen(
+            hasReceived(CSR),
+            hasReceived(ACP, CRAN30)
+        )
+        .onTransition(release(craneAccess))
+        .gotoState(DONE),
+
+    state(DONE).endState()
+); </code></pre>
+            </section>
+
+            <section>
+                <h3>Utlagring</h3>
+                <img height="530" src="assets/flowdiagrams/OutJob.png" alt="Utlagring">
+            </section>
+
+            <section>
+                <h3>Flytting (mellom kraner)</h3>
+                <img height="530" src="assets/flowdiagrams/MoveBetweenCranesJob.png" alt="Flytting mellom kraner">
+            </section>
+
+            <section>
+                <h3 class="left">DOT-language...</h3>
+                <p class="left schmedium">... digg å generé flytdiagram med kode</p>
+                <pre class="medium"><code data-trim contenteditable>
+digraph controller {
+
+  label="CraneSystemController";
+
+  1 [label="{DO_ONE_CYCLE}"];
+  2 [label="{RECEIVE_MESSAGE|deliverToJob\ncreateInJobIfSSCC}"];
+  3 [label="{DO_ONE_STEP_FOR_ALL_JOBS|sendCommands\nrequestResources}"];
+  4 [label="{KEEP_ALIVE_IF_IDLE|sendDUM\nwaitForDUA}"];
+
+  A [label="{OUT_OF_SYNC|tryToRecover}"];
+  0 [label="{IN_SYNC}"];
+
+  0->1;
+  0->A [label="error"];
+  A->A [label="not recovered"];
+  A->0 [label="back in sync"];
+  1->2
+  2->3
+  3->4
+  4->1
+
+  {rank=same;1 2};
+} </code></pre>
+            </section>
+        </section>
+
+        <!-- Testing -->
+        <section>
+            <section data-background="#CCEBFF">
+                <h1>Testing</h1>
+                <div><q>&ldquo;Mo code mo problems&rdquo;</q> - Notorious B.I.G.</div>
+                <div class="airtop">
+                    <img height="300" src="assets/jump1.jpg" alt="">
+                </div>
+
+
+            </section>
+
+            <section data-background="#CCEBFF">
+                <h2>Enhetstestar</h2>
+                <blockquote>&ldquo;TDD!! TDD!! TDD!!&rdquo;</blockquote>
+                <ul >
+
+                    <li class="airtop">Testane dokumenterer koda</li>
+                    <li><i>Ka</i> koda gjer er viktigare enn <i>korleis</i></li>
+                    <li>Mest mulig black-box</li>
+                    <ul>
+                        <li>data inn -> data ut</li>
+                    </ul>
+                    <li class="fragment highlight-blue">Trygghet</li>
+                    <ul>
+                        <li>koda gjer det den skal</li>
+                        <li>få det til å funke</li>
+                        <li>gjer det forståelig (refaktorér)</li>
+                    </ul>
+                    <!--<li>trådkode kompliserer testinga</li>-->
+                    <li>Øyeblikkelig tilbakemelding...</li>
+                    <li class="fragment highlight-red grow">Ei hjelp til å endre, IKKJE ET HINDER</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Rein gevinst</h2>
+                <ul style="font-size: 1.2em;">
+                    <li class="fragment semi-fade-out airtop">Prosjektet starta med begrensa informasjon</li>
+                    <li class="fragment semi-fade-out airtop">Vi oppdaga underveis at antakelsar var feil</li>
+                    <li class="fragment semi-fade-out airtop">Mulig å gjere endringar med liten risiko</li>
+                </ul>
+            </section>
+
+            <section>
+                <h4 class="left">Testkode-eksempel</h4>
+                <pre class="medium"><code data-trim contenteditable>@Test
+public void shouldPerformInJobSuccessfully() {
+
+    assertMovingToState(job, MOVING_TO_CHOICEPOS, ARQConveyorCommand.class);
+    assertReceiveIn(job, acpConveyorAt(CHOICE_LOC));
+
+    assertMovingToState(job, REQUESTING_CRANE_IN);
+    CraneAccessRequest craneInAccess = assertAndGrantRequest(job);
+
+    assertMovingToState(job, MOVING_TO_CRANE_IN, ARQConveyorCommand.class);
+    assertReceiveIn(job, porAt(CRANE_1_IN, 1));
+    assertReceiveIn(job, acpConveyorAt(CRANE_1_IN));
+
+    CraneAccessRequest craneAccess = assertMovingToState(job, WAITING_ON_CRANE, CRANE);
+    craneAccess.grant();
+
+    assertMovingToState(job, PICKING_UP_FROM_CRANE_IN, ARQCraneCommand.class);
+    assertReceiveIn(job, csr());
+    assertReceiveIn(job, porAt(CRANE_1_IN, 0));
+    assertReceiveIn(job, acpCrane());
+
+    assertMovingToState(job, DELIVERING_TO_SHELF, ARQCraneCommand.class);
+    assertThat(craneInAccess.getState(), is(RELEASED));
+    assertReceiveIn(job, csr());
+    assertReceiveIn(job, acpCrane());
+
+    assertMovingToState(job, DONE);
+    assertThat(craneAccess.getState(), is(RELEASED));
+} </code></pre>
+
+            </section>
+        </section>
+
+        <!-- Utvikling -->
+        <section data-background="#90B3E0">
+            <section>
+                <h1>Kankje berre teste...</h1>
+                <img height="300" src="assets/michaelvick1.jpg" alt="">
+            </section>
+
+            <section style="color: black;">
+                <h2 style="color: black;">Kode...</h2>
+                <ul>
+
+                    <li class="fragment semi-fade-out">Få det til å funke</li>
+                    <li class="fragment semi-fade-out">Refaktorér</li>
+                    <div class="fragment semi-fade-out">
+                        <li class="airtop">Lesbarhet is King Kong</li>
+                        <ul>
+                            <li>.. du les meir kode enn du skriv</li>
+                            <li>testane passar på at du ikkje innfører NYE feil</li>
+                        </ul>
+                    </div>
+                    <div class="fragment semi-fade-out">
+                        <li class="airtop">Spørr en venn!</li>
+                        <ul>
+                            <li>Kodegjennomgang</li>
+                            <li>Parprogrammering</li>
+                        </ul>
+                    </div>
+                </ul>
+            </section>
+        </section>
+        <!-- Simulator -->
+        <section data-background="#6DC680">
+            <section>
+                <h2>Simulator</h2>
+                <blockquote>
+                    &ldquo;Enhetstestar bekreftar at du har skrive koda rett,<br/>
+                    akseptansetestar bekreftar at du har skrive rett kode&rdquo;
+                </blockquote>
+                <div class="fragment roll-in airtop">
+                    <q>&ldquo;Can test this&rdquo;</q> - MC Hammer
+                </div>
+            </section>
+
+            <section>
+                <h3>Koffør koffør koffør?</h3>
+                <ul>
+                    <li>Swisslog hadde ikkje nåke å tilby..</li>
+                    <li>usikker på socket-kommunikasjon</li>
+                    <li>enhetstestar kan kun hjelpe et stykke på veien</li>
+                    <li>valgte Python</li>
+                    <ul>
+                        <li>mindre fare for at kran-koda kun funka mot Java-kode</li>
+                        <li>kjapt å komme igang</li>
+                        <li>kan det, lika det</li>
+                        <li class="fragment roll-in">og koffør kun snakke Java lizzom...</li>
+                    </ul>
+                    <li class="large airtop">Kun brukt for manuell testing</li>
+                </ul>
+
             </section>
         </section>
 
 
-        <section data-transition="linear">
-            <h2>Eksempel på side med fleire kode-snuttar</h2>
-            <ul>
-                <li>Main-metode</li>
-                <li>Spring og JavaConfig</li>
-            </ul>
-        <pre class="medium"><code>&gt; java --classpath "hz.jar:lib/*" -Denvironment=qa reku.hz.Server
-            &gt; java --classpath "hz.jar:lib/*" -Denvironment=qa -Dhz.init=true reku.hz.Server # trigging av datalasting
-            </code>
-</pre>
-        </section>
-
-
-        <section data-background="#CCEBFF">
-            <h1>Testing</h1>
-        </section>
-
-        <section data-background="#CCEBFF">
-            <h2>Enhetstestar</h2>
-            <ul>
-                <li>Kun pojos og mocks</li>
-                <li>Trådkode kompliserer testinga</li>
-                <li>Testane dokumenterer koda</li>
-                <li class="fragment airtop">Fokus på raske testar...</li>
-            </ul>
-        </section>
-
-        <section data-background="#CCEBFF">
-            <h2>Integrasjonstestar</h2>
-            <ul>
-                <li>Målet var å teste mest mulig black-box</li>
-                <li>Kom borti race conditions</li>
-                <li>.. enda opp med å måtte manipulere antall steps controlleren fekk køyre</li>
-                <ul class="schmedium">
-                    <li>...</li>
-                    <li>...</li>
-                    <li>...</li>
-                </ul>
-                <li>Repeterbart</li>
-                <li>Kan køyrast offline</li>
-                <li>Sparer oppstart-kostnad ved køyring av alle testane</li>
-            </ul>
-        </section>
-
         <section data-background="#8F2400" data-transition="zoom" data-transition-speed="slow">
-            <h1 style="color: black;">Demo</h1>
+            <h1 style="color: black; font-size: 9em;">Demo</h1>
         </section>
 
+        <section>
+            <section>
+                <h1>Dypdykk i kode</h1>
+                <div class="fragment zoom-in">
+                    <p>Dei som vil kan ta ei lang pause...</p>
+                    <img height="300" src="assets/philjones2.jpg" alt="">
+                </div>
+            </section>
+
+            <section>
+                <h2>Be concurrent</h2>
+                <h4>be be concurrent</h4>
+            </section>
+
+            <section>
+                <h2>Socket on this</h2>
+            </section>
+
+            <section>
+                <h2>The state machina of god</h2>
+            </section>
+
+            <section>
+                <h2>Resource mismanagement</h2>
+            </section>
+        </section>
         <section data-markdown>
             ## Prosjektstatus
             * Enkel testing gjennomført i Trondheim
@@ -378,11 +654,8 @@
         </section>
 
         <section data-background="#EE9732" data-transition="zoom" data-transition-speed="slow">
-            <h1 style="color: black;">Video</h1>
-        </section>
-
-        <section data-background="#EE9732">
-            <!-- embed video her -->
+            <h1 style="color: black;">Spørsmål?</h1>
+            <img height="350" src="assets/stupidpeople.jpg" alt="">
         </section>
 
 

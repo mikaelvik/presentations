@@ -4,7 +4,14 @@
 }
 
 .reveal pre.medium {
-  max-width: 85%;
+  max-width: 100%;
+}
+
+li.large {
+  font-size: 1.2em;
+}
+span.small {
+  font-size: .9em;
 }
 
 ul.medium {
@@ -28,7 +35,7 @@ ul.schmedium, div.schmedium {
 
 .off-left {
   text-align: left;
-  padding-left: 40px;
+  padding-left: 400px;
 }
 
 .right {
