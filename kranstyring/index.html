@@ -37,15 +37,14 @@
         <section>
             <h1>Kranstyring</h1>
 
-            <p><a href="http://github.com/mikaelvik">Mikael Vik</a> / mv@.driw.no</a></p>
+            <p><a href="http://github.com/mikaelvik">Mikael Vik</a> / mv@driw.no</a></p>
         </section>
 
         <section data-markdown>
             <script type="text/template">
                 ## Agenda
                 * Krana
-                * Kommunikasjon
-                * Ulike jobbar
+                * Litt arkitektur
                 * Utvikling
                 * Demo
                 * Testing i Trondheim
@@ -56,7 +55,7 @@
 
         <section data-background="#FFBEE2">
 
-            <section data-background="skyblue">
+            <section data-background="lightblue">
                 <h1>Krana</h1>
                 <p>eller kransystemet...</p>
                 <img height="300" src="assets/cranebird.jpg" alt="">
@@ -74,6 +73,7 @@
                     * Henta ut informasjon:
                       * kommunikasjons-logging vha Wireshark
                       * store mengder Swisslog-dokumentasjon
+                    * Masse prat med folka
                 </script>
             </section>
 
@@ -199,6 +199,7 @@
                     <li> posisjonsbasert format</li>
                     <ul>
                         <li>sekvens, til, frå, type</li>
+                        <li>spesialfelt per meldingstype</li>
                     </ul>
                     <li> sender ack ved mottak</li>
                     <li> synk-sjekk vha sekvensar (for alt<span class="fragment">, ALT!!</span>)</li>
@@ -312,14 +313,14 @@
             </section>
             <section data-markdown>
                 <script type="text/template">
-                    ## Ein vanlig dag på jobben
+                    ## En vanlig dag i jobben
                     <br/>
 
                     * Send melding (arq, vent på ack)
                     * Be om tilgang på ressurs
                       * <span class="small">foreløpig: kran-inn, kran, kran-ut</span>
                     * Vent på melding(ar) frå krana
-                    * Klar for neste steg?
+                    * Gå til neste tilstand?
                     * Frigi ressursar
                     * <div class="fragment airtop grow">.. tilstandsmaskiner</div>
 
@@ -402,7 +403,7 @@
                 <img height="530" src="assets/flowdiagrams/SimpleMoveJob.png" alt="Enkel omflytting">
             </section>
             <section data-transition="zoom">
-                <h3>Innlagring - Kode</h3>
+                <h3>Flytting - Kode</h3>
                 <pre class="medium"><code data-trim contenteditable>defineStates(
     state(INITIAL)
         .gotoState(WAITING_ON_CRANE),
@@ -515,6 +516,12 @@ digraph controller {
                     <li class="fragment semi-fade-out airtop">Vi oppdaga underveis at antakelsar var feil</li>
                     <li class="fragment semi-fade-out airtop">Mulig å gjere endringar med liten risiko</li>
                 </ul>
+                <br/>
+                <br/>
+                <br/>
+                <div class="airtop">
+                    <q>&ldquo;Turn and face the strange. Ch-ch-changes.&rdquo;</q> - David Bowie
+                </div>
             </section>
 
             <section>
@@ -623,7 +630,7 @@ public void shouldPerformInJobSuccessfully() {
             <section>
                 <h1>Dypdykk i kode</h1>
                 <div class="fragment zoom-in">
-                    <p>Dei som vil kan ta ei lang pause...</p>
+                    <p>No blir det teknisk...</p>
                     <img height="300" src="assets/philjones2.jpg" alt="">
                 </div>
             </section>
@@ -648,9 +655,12 @@ public void shouldPerformInJobSuccessfully() {
         <section data-markdown>
             ## Prosjektstatus
             * Enkel testing gjennomført i Trondheim
+              * tok tid å komme i gang, lageret var i drift
+              * kunne ikkje risikere å stoppe produksjonen
+              * fekk tilslutt kjørt inn en palle (video om vi har tid)
             * Opp- og nedkobling ikkje komplett
             * Integrasjon med Drill gjenstår
-            * .. skal vere klart i august
+            * .. skal vere klart ca i august/til slutt
         </section>
 
         <section data-background="#EE9732" data-transition="zoom" data-transition-speed="slow">
