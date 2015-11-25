@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Hackaton#1</title>
+    <meta name="description" content="TestDemo">
+    <meta name="author" content="Mikael Vik">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="../../reveal/css/reveal.css">
+    <link rel="stylesheet" href="../../reveal/css/theme/solarized.css" id="theme">
+    <link rel="stylesheet" href="css/testdemo.css">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="../../reveal/lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+        document.write('<link rel="stylesheet" href="../../reveal/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf'
+                : 'paper' )
+                       + '.css" type="text/css" media="print">');
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+    <div class="slides">
+
+        <section>
+            <h1>Hackaton #1</h1>
+
+            <p><a href="http://github.com/mikaelvik">Mikael Vik</a> / mikael.vik@gmail.com</a></p>
+        </section>
+
+        <section data-markdown>
+            ## Agenda
+            * Testing i C#
+                * rammeverk
+                * VS+ReSharper
+            * NuGet
+            * TeamCity
+                * server og agentar
+                * sette opp bygg
+            * _Git_
+            * _Dependency Injection_
+            * Oppgåver
+        </section>
+
+        <section>
+            <section data-markdown>
+                ## Test-rammeverk
+                
+                * NUnit
+                    * støtta både av ReSharper og TeamCity
+                    * har mykje av funksjonalitet eg ser etter
+                * FluentAssertions 
+                    * kraftige og lesbare asserts
+                * Moq
+                    * suveren mocking
+            </section>
+            <section data-markdown>
+                ### ReSharper
+                
+                * TestCop for ReSharper (plugin)
+                    * hoppe mellom test og implementasjon
+                * Oppretta et par live templates
+                    * ntest, nsetup, nfixture
+            </section>
+            
+            <section data-markdown contenteditable>
+                ### Test-eksempel
+```cs 
+[Test]
+public void Attack_Should_Mangle_Target()
+{
+    var target = "Morten";
+    string result = _sword.Hit(target);
+    result.Should().Match("Slice*in half*")
+        .And.Contain(target);
+}
+```
+            </section>
+        
+            <section data-markdown contenteditable>
+                ### Test-eksempel (exception)
+```cs 
+[Test]
+public void Fail_When_Arming_Without_Weapon()
+{
+    // vanilla NUnit
+    Assert.Catch<DisgruntledNinja>(() => _ninja.Arm(null));
+    
+    // FluentAssertions
+    Action act = () => _ninja.Arm(null);
+    act.ShouldThrow<DisgruntledNinja>()
+        .WithMessage("?*hell no*");
+}```
+            </section>
+        </section>
+        
+            <section data-background="#8F7700" data-transition="zoom" data-transition-speed="slow">
+                <h1 style="color: black; font-size: 9em;">Demo</h1>
+                <p style="color: black">Testing i VS</p>
+            </section>
+        
+        <section>
+            <section>
+                <h2>NuGet</h2>
+                <ul>
+                    <li>Pakke-manager</li>
+                    <div class="fragment">
+                        <ul>
+                            <li>konsumér</li>
+                            <li>produsér</li>
+                            <li>publisér</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <li>Kan pakke det meste</li>
+                    </div>
+                    <div class="fragment">
+                        <li>Egentlig ei glorifisert zip-fil med tillegsinfo..</li>
+                    </div>
+                </ul>
+            </section>
+            <section data-markdown contenteditable>
+                <script type="text/template">
+                    ### .nuspec
+                    
+                    Spesifikasjons-template som kan brukast av TeamCity.
+```xml  
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>    
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright &#0169; 2015</copyright>
+    <description>$description$</description>
+    <frameworkAssemblies>
+    </frameworkAssemblies>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>
+
+
+```</script>
+
+            </section>
+        </section>
+        
+        <section>            
+            <section data-markdown>
+                ## TeamCity         
+                * Server 
+                    * har styringa
+                * Agentar
+                    * gjer jobben
+            </section>
+
+            <section data-markdown>
+                ### Features                    
+                * Full støtte for .NET-prosjekt
+                * PowerShell
+                * Testar og testdekning                    
+                * Kode-analyse
+                * Bygge pakkar
+                    * DLL
+                    * NuGet
+                    * WSP
+            </section>
+            
+            <section data-background="#8F2400" data-transition="zoom" data-transition-speed="slow">
+                <h1 style="color: black; font-size: 9em;">Demo</h1>
+                <p style="color: black">TeamCity</p>
+            </section>
+
+        </section>
+
+        <section>            
+            <section data-markdown>
+                ## Oppgåver                    
+                * TeamCity 
+                * CodeKata
+            </section>
+     
+            <section data-markdown>
+                ### Oppgåver - TeamCity
+                
+                Velg mellom oppgåvene under:                    
+                * Sett opp nytt bygg 
+                * Sett opp agent på ei ny maskin
+                    * evt sjå på konfigurering av agentar 
+                * Få Invo-kode til å bygge på buildserver-agenten
+                    * installer det som manglar, evt
+                    * sett opp GAC for å håndtere assemblies
+                * Legg til bygging av wsp-pakkar 
+                * Test PowerShell-steg
+            </section>
+            <section data-markdown>
+                ### CodeKata
+                * Små programmeringsoppgåver
+                    * "practice makes perfect"                    
+                * Hent ned kode
+                    * Kan gjerast direkte i Visual Studio
+                    * Installér SourceTree eller GitHub Desktop
+                * To projekt under TestDemo/CodeKata 
+                    * Code 
+                    * Code.Tests 
+                <span class=fragment>
+                * Bør vere sjølvforklarande...
+                </span>
+                    
+```bash
+              git clone https://github.com/mikaelvik/TestDemo.git                    
+```                    
+            </section>
+        </section>
+
+        
+        <section data-background="#EE9732" data-transition="zoom" data-transition-speed="slow">
+            <h1 style="color: black;">Spørsmål?</h1>
+            <img height="350" src="assets/stupidpeople.jpg" alt="">
+        </section>
+
+    </div>
+
+</div>
+
+<script src="../../reveal/lib/js/head.min.js"></script>
+<script src="../../reveal/js/reveal.min.js"></script>
+
+<script>
+
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+                          controls: true,
+                          progress: true,
+                          history: true,
+                          center: true,
+
+                          theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                          transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+                          // Optional libraries used to extend on reveal.js
+                          dependencies: [
+                              {
+                                  src: '../../reveal/lib/js/classList.js', condition: function () {
+                                  return !document.body.classList;
+                              }
+                              },
+                              {
+                                  src: '../../reveal/plugin/markdown/marked.js', condition: function () {
+                                  return !!document.querySelector('[data-markdown]');
+                              }
+                              },
+                              {
+                                  src: '../../reveal/plugin/markdown/markdown.js', condition: function () {
+                                  return !!document.querySelector('[data-markdown]');
+                              }
+                              },
+                              {
+                                  src: '../../reveal/plugin/highlight/highlight.js', async: true, callback: function () {
+                                  hljs.initHighlightingOnLoad();
+                              }
+                              },
+                              {
+                                  src: '../../reveal/plugin/zoom-js/zoom.js', async: true, condition: function () {
+                                  return !!document.body.classList;
+                              }
+                              },
+                              {
+                                  src: '../../reveal/plugin/notes/notes.js', async: true, condition: function () {
+                                  return !!document.body.classList;
+                              }
+                              }
+                          ]
+                      });
+
+</script>
+
+</body>
+</html>
