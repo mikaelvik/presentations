@@ -56,32 +56,102 @@
 
         <section>
             <section data-markdown>
-                ## Test-rammeverk
+                ## Testing
+                Test-rammeverk for C#:
                 
-                * NUnit
+                * [NUnit](https://github.com/nunit/nunit/wiki)
                     * støtta både av ReSharper og TeamCity
                     * har mykje av funksjonalitet eg ser etter
-                * FluentAssertions 
+                * [FluentAssertions](http://www.fluentassertions.com/)
                     * kraftige og lesbare asserts
-                * Moq
+                * [Moq](https://github.com/Moq/moq4/wiki/Quickstart)
                     * suveren mocking
             </section>
             <section data-markdown>
                 ### ReSharper
                 
-                * TestCop for ReSharper (plugin)
+                * [TestCop](https://testcop.codeplex.com/) for ReSharper (plugin)                   
                     * hoppe mellom test og implementasjon
+                    * opprette test 
+                    * rename av kode -> rename av testkode
                 * Oppretta et par live templates
                     * ntest, nsetup, nfixture
+                * Shortcuts
+                    * Hoppe mellom test og kode: **Ctrl+G, Ctrl+T**
+                    * Køyr testar: **Ctrl+U,R** og *Ctrl+U,Ctrl+R*
+            </section>
+            <section>
+              <div  class=small>
+                <h3>Plassering av testar</h3>
+                
+                <p>Gitt en solution med ett eller fleire kodeprosjekt</p>
+                
+                <ul>
+                  <li>Hovedsaklig tre måtar:</li>
+                  <ol>
+                    <li>fleire testprosjekt identifisert vha namespace</li>
+                    <ul>
+                      <li>FomoLib -> FomoLib.Ninjas</li>
+                      <li>FomoLib.Tests -> FomoLib.Tests.Ninjas</li>
+                    </ul>
+                    <li>fleire testprosjekt identifisert vha prosjektnavn</li>
+                    <ul>
+                      <li>FomoLib -> FomoLib.Ninjas</li>
+                      <li>FomoLib.Tests -> FomoLib.Ninjas</li>
+                    </ul>
+                    <li>ett testprosjekt for alle kodeprosjekt</li>
+                  </ol>
+                </ul>
+                
+                <br/><br/>
+                <p class="fragment grow">Demokoda brukar namespace </p>
+                
+                <div class="fragment roll-in">
+                <ul>
+                  <li>Likar nr to best:</li>
+                  <ul>
+                    <li>fint når kode og testar ligg i samme namespace </li>
+                    <li>må slå av klaging i ReSharper...</li>
+                  </ul>
+                </ul>
+                    
+                <br/><br/>
+                <p>Les meir om dette på  <a href="https://testcop.codeplex.com/">TestCop</a></p>
+                </div>
+              </div>
+            </section>
+            <section data-markdown>
+                ### TDD
+                
+                * Opprett ny klasse
+                * Få hjelp av TestCop til å lage test
+                * Gjenta:
+                    * skriv test 
+                    * test feilar
+                    * skriv kode 
+                    * test ok
+                * La VS+RS generere manglande kode 
+                * Flytt kode vha refaktorering
             </section>
             
             <section data-markdown contenteditable>
                 ### Test-eksempel
 ```cs 
+// Vanlig test 
 [Test]
 public void Attack_Should_Mangle_Target()
 {
     var target = "Morten";
+    string result = _sword.Hit(target);
+    result.Should().Match("Slice*in half*")
+        .And.Contain(target);
+}
+
+// Parameterisert test 
+[TestCase("Kenneth")]
+[TestCase("Thor")]
+public void Attack_Should_Mangle_Target(string target)
+{
     string result = _sword.Hit(target);
     result.Should().Match("Slice*in half*")
         .And.Contain(target);
@@ -126,7 +196,7 @@ public void Fail_When_Arming_Without_Weapon()
                     <div class="fragment">
                         <li>Kan pakke det meste</li>
                     </div>
-                    <div class="fragment">
+                    <div class="fragment roll-in">
                         <li>Egentlig ei glorifisert zip-fil med tillegsinfo..</li>
                     </div>
                 </ul>
@@ -163,15 +233,17 @@ public void Fail_When_Arming_Without_Weapon()
         
         <section>            
             <section data-markdown>
-                ## TeamCity         
+                ## TeamCity   
+                * Laga av [JetBrains](http://jetbrains.com/teamcity)
                 * Server 
                     * har styringa
                 * Agentar
                     * gjer jobben
+                * Masse plugins
             </section>
-
+            
             <section data-markdown>
-                ### Features                    
+                ### TeamCity Features                    
                 * Full støtte for .NET-prosjekt
                 * PowerShell
                 * Testar og testdekning                    
@@ -182,6 +254,23 @@ public void Fail_When_Arming_Without_Weapon()
                     * WSP
             </section>
             
+            <section>
+                <h3>Deploy</h3>
+                
+                <p>TeamCity er god på bygging av kode/pakkar, og _kan håndtere_ deployment.</p>
+                                
+                <ul>
+                  <li><a href=https://octopus.com/">Octopus Deploy</a> er god på <strong>deploy</strong>
+                  <li>TeamCity og Octopus Deploy samarbeider godt</li>
+                  <ul>
+                    <li>TeamCity: produserer artefakter</li>
+                    <li>Octopus: konfigurere og distribuere</li>
+                  </ul>
+                </ul>
+                <br/>
+                <br/>
+                <p class="fragment grow">Dette må vi ser mer på senere. </p>
+            </section>
             <section data-background="#8F2400" data-transition="zoom" data-transition-speed="slow">
                 <h1 style="color: black; font-size: 9em;">Demo</h1>
                 <p style="color: black">TeamCity</p>
@@ -190,10 +279,24 @@ public void Fail_When_Arming_Without_Weapon()
         </section>
 
         <section>            
-            <section data-markdown>
-                ## Oppgåver                    
-                * TeamCity 
-                * CodeKata
+            <section data-background="#E1C5EB" data-background-transition="zoom">
+                <h2>Oppgåver</h2>
+                <ul>
+                  <li><a href="buildserver:8080">TeamCity</a></li>
+                  <li><a href="https://github.com/mikaelvik/TestDemo/tree/master/FomoHack">Fomo/Ninjas</a></li>
+                  <li><a href="https://github.com/mikaelvik/TestDemo/tree/master/CodeKata">CodeKata</a></li>
+                </ul>
+                
+                <div style="margin-top: 40px">
+                <p>Korleis få opna eit Git-prosjekt i <a href="http://rickrainey.com/2013/07/27/visual-studio-and-gitub-the-basics-of-working-with-existing-repositories-2/">
+                  Visual Studio
+                </a>:</p>
+                <p>Scroll til "Cloning a Repository".</p>
+                
+                <p>
+                Url du skal connecte mot er: <br/>- https://github.com/mikaelvik/TestDemo/
+                </p>
+                <div>
             </section>
      
             <section data-markdown>
@@ -208,9 +311,13 @@ public void Fail_When_Arming_Without_Weapon()
                     * sett opp GAC for å håndtere assemblies
                 * Legg til bygging av wsp-pakkar 
                 * Test PowerShell-steg
+                * Sett opp autentisering mot AD
+                
+                Eller nåke anna du føler for..
             </section>
             <section data-markdown>
                 ### CodeKata
+                * http://codekata.com/
                 * Små programmeringsoppgåver
                     * "practice makes perfect"                    
                 * Hent ned kode
