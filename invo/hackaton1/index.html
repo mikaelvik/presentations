@@ -53,9 +53,15 @@
             * _Dependency Injection_
             * Oppgåver
         </section>
+        
+        <section>
+            <h3>Disclaimer</h3>
+            <p>Mest for utviklarane..</p>
+        </section>
 
         <section>
             <section data-markdown>
+               <script type="text/template">
                 ## Testing
                 Test-rammeverk for C#:
                 
@@ -65,7 +71,9 @@
                 * [FluentAssertions](http://www.fluentassertions.com/)
                     * kraftige og lesbare asserts
                 * [Moq](https://github.com/Moq/moq4/wiki/Quickstart)
-                    * suveren mocking
+                    * suveren mocking                  
+                * inkluderer vha NuGet-pakkar
+                </script>
             </section>
             <section data-markdown>
                 ### ReSharper
@@ -111,7 +119,7 @@
                   <li>Likar nr to best:</li>
                   <ul>
                     <li>fint når kode og testar ligg i samme namespace </li>
-                    <li>må slå av klaging i ReSharper...</li>
+                    <li style="font-size: 0.75em"><em>må først få slått av klaging i ReSharper...</em></li>
                   </ul>
                 </ul>
                     
@@ -135,9 +143,10 @@
             </section>
             
             <section data-markdown contenteditable>
+                <script type="text/template">
                 ### Test-eksempel
+                Enkelt-test 
 ```cs 
-// Vanlig test 
 [Test]
 public void Attack_Should_Mangle_Target()
 {
@@ -146,8 +155,14 @@ public void Attack_Should_Mangle_Target()
     result.Should().Match("Slice*in half*")
         .And.Contain(target);
 }
-
-// Parameterisert test 
+```</script>
+            </section>
+        
+            <section data-markdown contenteditable>
+                <script type="text/template">
+                ### Test-eksempel
+                Parameterisert test 
+```cs 
 [TestCase("Kenneth")]
 [TestCase("Thor")]
 public void Attack_Should_Mangle_Target(string target)
@@ -156,11 +171,13 @@ public void Attack_Should_Mangle_Target(string target)
     result.Should().Match("Slice*in half*")
         .And.Contain(target);
 }
-```
+```</script>
             </section>
         
             <section data-markdown contenteditable>
-                ### Test-eksempel (exception)
+                <script type="text/template">
+                ### Test-eksempel 
+                Exception
 ```cs 
 [Test]
 public void Fail_When_Arming_Without_Weapon()
@@ -172,14 +189,15 @@ public void Fail_When_Arming_Without_Weapon()
     Action act = () => _ninja.Arm(null);
     act.ShouldThrow<DisgruntledNinja>()
         .WithMessage("?*hell no*");
-}```
+}```</script>
             </section>
         </section>
-        
-            <section data-background="#8F7700" data-transition="zoom" data-transition-speed="slow">
-                <h1 style="color: black; font-size: 9em;">Demo</h1>
-                <p style="color: black">Testing i VS</p>
-            </section>
+
+        <!-- Test-demo -->
+        <section data-background="#8F7700" data-transition="zoom" data-transition-speed="slow">
+            <h1 style="color: black; font-size: 9em;">Demo</h1>
+            <p style="color: black">Testing i VS</p>
+        </section>
         
         <section>
             <section data-transition="fade" >
@@ -244,18 +262,34 @@ public void Fail_When_Arming_Without_Weapon()
         </section>
         
         <section>            
-            <section data-markdown>
-                ## TeamCity   
-                * Laga av [JetBrains](http://jetbrains.com/teamcity)
-                * Server 
-                    * har styringa
-                * Agentar
-                    * gjer jobben
-                * Masse plugins
+            <section>
+                <h2>TeamCity</h2>
+                <p>Bygging og kontinuerlig integrasjon. Laga av <a href="http://jetbrains.com/teamcity">JetBrains</a>.</p>
+                <ul>
+                  <li>Server: har styringa</li>
+                  <li>Agentar: gjer jobben</li>
+                  <li>Masse plugins</li>
+                  <li><p>Gratis for 20 bygg og 3 agentar</p>
+                    <ul>
+                      <li>overkommelig pris ved større behov</li>
+                    </ul>
+                  </li>
+                </ul>
+                
+                <br/>
+                <br/>
+                <ul>
+                  <li>Enkel installasjon
+                    <ul>
+                      <li>men tidkrevande å sette opp agentar for Invo-kode :)</li>
+                    </ul>
+                  </li>
+                </ul>
+                
             </section>
             
             <section data-markdown>
-                ### TeamCity Features                    
+                ### TeamCity Features (utvalg)                    
                 * Full støtte for .NET-prosjekt
                 * PowerShell
                 * Testar og testdekning                    
@@ -264,43 +298,45 @@ public void Fail_When_Arming_Without_Weapon()
                     * DLL
                     * NuGet
                     * WSP
+                * BuildScreen
             </section>
-            
+            <section data-markdown>
+                ### TeamCity-Ressursar
+                - [TeamCity-Howtos (YouTube)](https://www.youtube.com/channel/UC7sNiHQuGi_YxQUm8my8abw/videos)
+            </section>
             <section>
-            <h3>Utfordringar</h3>
-            <ul>
-              <li>Referansar til assemblies 
-                <ul>
-                  <li>stiller store krav til agentane</li>
-                  <li><strong>kan</strong> bruke utviklar-maskiner</li>
-                </ul>
-              </li>
-              <li>Linka filer
-                <ul>
-                  <li>meir kode må sjekkast ut </li>
-                  <li>vanskelig å styre kva som blir påvirka av endringar</li>
-                </ul>
-              </li>
-            </ul>
+              <h3>Utfordringar</h3>
+              <ul>
+                <li>Referansar til assemblies 
+                  <ul>
+                    <li>stiller store krav til agentane</li>
+                    <li><strong>kan</strong> bruke utviklar-maskiner</li>
+                  </ul>
+                </li>
+                <li>Linka filer
+                  <ul>
+                    <li>meir kode må sjekkast ut </li>
+                    <li>vanskelig å styre kva som blir påvirka av endringar</li>
+                  </ul>
+                </li>
+              </ul>
             
-            <br/>
-            <br/>
-            
-            
-            <ul class="fragment fade-in">
-              <li>To the rescue:
-                <ul>
-                <li>NuGet</li>
-                <li>GAC</li>
-                  <li>Dependency Management-<a href="https://www.jfrog.com/blog/dependency-management-with-net-doing-it-right/">diskusjon</a> frå JFrog
-                    <ul>
-                      <li>endar sjølvsagt i en shameless plug for Artifactory</li>
-                      <li class="fragment fade-in">... forståelig nok.</li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-            </ul>
+              <br/>
+              <br/>            
+              <ul class="fragment fade-in">
+                <li>To the rescue:
+                  <ul>
+                  <li>NuGet</li>
+                  <li>GAC</li>
+                    <li>Dependency Management-<a href="https://www.jfrog.com/blog/dependency-management-with-net-doing-it-right/">diskusjon</a> frå JFrog
+                      <ul>
+                        <li>endar sjølvsagt i en shameless plug for Artifactory</li>
+                        <li class="fragment fade-in">... forståelig nok.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </section>
             
             <section>
@@ -320,6 +356,8 @@ public void Fail_When_Arming_Without_Weapon()
                 <br/>
                 <p class="fragment grow">Dette må vi sjå meir på seinere. </p>
             </section>
+            
+            <!-- TeamCity-demo -->
             <section data-background="#8F2400" data-transition="zoom" data-transition-speed="slow">
                 <h1 style="color: black; font-size: 9em;">Demo</h1>
                 <p style="color: black">TeamCity</p>
@@ -348,35 +386,44 @@ public void Fail_When_Arming_Without_Weapon()
                 <div>
             </section>
      
-            <section>
-              <h3>Oppgåver - TeamCity</h3>
+            <section class=medium>
+              <h2>Oppgåver - TeamCity</h2>
               <p>Velg mellom oppgåvene under:</p>
               <ul>
-                <li>Sett opp nytt bygg </li>
+                <li>Sett opp <a href="https://confluence.jetbrains.com/display/TCD9/Build+Configuration">nytt bygg</a></li>
                 <li>Sett opp agent på ei ny maskin
                   <ul>
+                    <li>last ned <a href="http://buildserver:8080/update/agentInstaller.exe">installer</a> frå serveren
                     <li>evt sjå på konfigurering av agentar </li>
                   </ul>
                 </li>
                 <li>Få Invo-kode til å bygge på buildserver-agenten
                   <ul>
+                    <li>sjekk <a href="http://buildserver:8080/project.html?projectId=InvoSharepointSolution">SPS-prosjektet</a> på buildserver</li>
                     <li>installer det som manglar, evt</li>
-                    <li>sett opp GAC for å håndtere assemblies</li>
+                    <li>sett opp <a href="http://www.synteractiveingenuity.com/wordpress/2012/05/14/building-a-sharepoint-2010-wsp-using-teamcity/">GAC</a> for å håndtere assemblies</li>
                   </ul>
                 </li>
-                <li>Legg til bygging av wsp-pakkar </li>
-                <li>Prøv ut PowerShell-steg</li>
-                <li>Sett opp autentisering mot AD</li>
+                <li>Legg til bygging av <a href="http://www.synteractiveingenuity.com/wordpress/2012/05/14/building-a-sharepoint-2010-wsp-using-teamcity/">wsp-pakkar</a></li>
+                <li>Prøv ut <a href="https://confluence.jetbrains.com/display/TCD9/PowerShell">PowerShell-steg</a></li>
+                <li>Sett opp <a href="https://confluence.jetbrains.com/display/TCD9/NTLM+HTTP+Authentication">autentisering</a> mot AD</li>
+                <li>Sjå på byggeskjerm
+                  <ul>
+                    <li><a href="https://buildscreen.codeplex.com/">BuildScreen</a>: frittståande app</li>
+                    <li><a href="https://chrome.google.com/webstore/detail/teamcity-status-monitor/ojkkaphfgjpbckihnbbminnoenhndeje?hl=en-GB">Status Monitor</a>: Chrome-plugin</li>
+                  </ul>
+                </li>
               </ul>
               <br/>
               <br/>
               <p>Eller nåke anna du føler for..</p>
             </section>
-            <section data-markdown  data-background="assets/fomo1.jpg" class="bright">
-                ### Oppgåver - Fomo/Ninjas
+            <section data-markdown  data-background="assets/fomo1.jpg" class="bright medium">
+                ## Oppgåver - Fomo/Ninjas
                 * Utvid med fleire testar og meir kode
                     * fleire våpen
                     * Target-klasse (i staden for 'string')
+                   
                     * life force vs damage                    
                     * bedre våpen
                         * gi damage?
