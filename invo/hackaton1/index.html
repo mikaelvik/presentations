@@ -182,7 +182,7 @@ public void Fail_When_Arming_Without_Weapon()
             </section>
         
         <section>
-            <section>
+            <section data-transition="fade" >
                 <h2>NuGet</h2>
                 <ul>
                     <li>Pakke-manager</li>
@@ -201,7 +201,19 @@ public void Fail_When_Arming_Without_Weapon()
                     </div>
                 </ul>
             </section>
-            <section data-markdown contenteditable>
+            <section data-markdown data-transition="fade" >
+               ## NuGet-Server 
+               
+               * TeamCity har egen NuGet-feed
+                   - innstillinger finn du [her](http://buildserver:8080/admin/admin.html?item=nugetServerSettingsTab)
+                   - enkelt å legge den til i Visual Studio 
+               * Kan (_og bør_) forandre korleis prosjekt byggast opp 
+                   - kva skal vere NuGet-pakker
+                   - kva skal installeres på maskina
+                   - kan vi få opp GAC på bygge-agentene
+               * Vi bør sette opp vår egen server etter kvart
+            </section>
+            <section data-markdown contenteditable data-transition="fade" >
                 <script type="text/template">
                     ### .nuspec
                     
@@ -255,6 +267,43 @@ public void Fail_When_Arming_Without_Weapon()
             </section>
             
             <section>
+            <h3>Utfordringar</h3>
+            <ul>
+              <li>Referansar til assemblies 
+                <ul>
+                  <li>stiller store krav til agentane</li>
+                  <li><strong>kan</strong> bruke utviklar-maskiner</li>
+                </ul>
+              </li>
+              <li>Linka filer
+                <ul>
+                  <li>meir kode må sjekkast ut </li>
+                  <li>vanskelig å styre kva som blir påvirka av endringar</li>
+                </ul>
+              </li>
+            </ul>
+            
+            <br/>
+            <br/>
+            
+            
+            <ul class="fragment fade-in">
+              <li>To the rescue:
+                <ul>
+                <li>NuGet</li>
+                <li>GAC</li>
+                  <li>Dependency Management-<a href="https://www.jfrog.com/blog/dependency-management-with-net-doing-it-right/">diskusjon</a> frå JFrog
+                    <ul>
+                      <li>endar sjølvsagt i en shameless plug for Artifactory</li>
+                      <li class="fragment fade-in">... forståelig nok.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            </section>
+            
+            <section>
                 <h3>Deploy</h3>
                 
                 <p>TeamCity er god på bygging av kode/pakkar, og _kan håndtere_ deployment.</p>
@@ -269,7 +318,7 @@ public void Fail_When_Arming_Without_Weapon()
                 </ul>
                 <br/>
                 <br/>
-                <p class="fragment grow">Dette må vi ser mer på senere. </p>
+                <p class="fragment grow">Dette må vi sjå meir på seinere. </p>
             </section>
             <section data-background="#8F2400" data-transition="zoom" data-transition-speed="slow">
                 <h1 style="color: black; font-size: 9em;">Demo</h1>
@@ -299,49 +348,72 @@ public void Fail_When_Arming_Without_Weapon()
                 <div>
             </section>
      
-            <section data-markdown>
-                ### Oppgåver - TeamCity
-                
-                Velg mellom oppgåvene under:                    
-                * Sett opp nytt bygg 
-                * Sett opp agent på ei ny maskin
-                    * evt sjå på konfigurering av agentar 
-                * Få Invo-kode til å bygge på buildserver-agenten
-                    * installer det som manglar, evt
-                    * sett opp GAC for å håndtere assemblies
-                * Legg til bygging av wsp-pakkar 
-                * Test PowerShell-steg
-                * Sett opp autentisering mot AD
-                
-                Eller nåke anna du føler for..
-            </section>
             <section>
-                ### Fomo/Ninjas
+              <h3>Oppgåver - TeamCity</h3>
+              <p>Velg mellom oppgåvene under:</p>
+              <ul>
+                <li>Sett opp nytt bygg </li>
+                <li>Sett opp agent på ei ny maskin
+                  <ul>
+                    <li>evt sjå på konfigurering av agentar </li>
+                  </ul>
+                </li>
+                <li>Få Invo-kode til å bygge på buildserver-agenten
+                  <ul>
+                    <li>installer det som manglar, evt</li>
+                    <li>sett opp GAC for å håndtere assemblies</li>
+                  </ul>
+                </li>
+                <li>Legg til bygging av wsp-pakkar </li>
+                <li>Prøv ut PowerShell-steg</li>
+                <li>Sett opp autentisering mot AD</li>
+              </ul>
+              <br/>
+              <br/>
+              <p>Eller nåke anna du føler for..</p>
+            </section>
+            <section data-markdown  data-background="assets/fomo1.jpg" class="bright">
+                ### Oppgåver - Fomo/Ninjas
                 * Utvid med fleire testar og meir kode
                     * fleire våpen
+                    * Target-klasse (i staden for 'string')
+                    * life force vs damage                    
                     * bedre våpen
-                    * Target-klasse
-                    * life force vs damage
-                    
+                        * gi damage?
+                * Sette opp bygg i TeamCity 
+                    * NuGet Package Restore
+                    * bygg kode
+                    * køyr testar
+                    * inspections og coverage
+                    * produsere NuGet-pakke 
             </section>
-            <section data-markdown>
-                ### CodeKata
-                * http://codekata.com/
-                * Små programmeringsoppgåver
-                    * "practice makes perfect"                    
-                * Hent ned kode
-                    * Kan gjerast direkte i Visual Studio
-                    * Installér SourceTree eller GitHub Desktop
-                * To projekt under TestDemo/CodeKata 
-                    * Code 
-                    * Code.Tests 
-                <span class=fragment>
-                * Bør vere sjølvforklarande...
-                </span>
-                    
-```bash
-              git clone https://github.com/mikaelvik/TestDemo.git                    
-```                    
+            <section>
+              <h3>Oppgåver - CodeKata</h3>
+              <p><a href="http://butunclebob.com/files/downloads/Bowling%20Game%20Kata.ppt">Bowling Game</a> (ppt, <em>klassikar</em> frå Uncle Bob)</p>
+              <p><a href="http://codekata.com/">CodeKata</a>, info og oppgåver</p>
+              
+              <br/>
+              <ul>                
+                <li>Små programmeringsoppgåver
+                  <ul>
+                    <li>"practice makes perfect"</li>
+                  </ul>
+                </li>
+                <li>Hent ned kode (<em>TestDemo</em>)
+                  <ul>
+                    <li>Direkte i Visual Studio (sjå første Oppgåve-slide)</li>
+                    <li><em>Installér SourceTree eller GitHub Desktop</em></li>
+                    <li><em>Kommandolinje...</em></li>
+                  </ul>
+                </li>
+                <li><p>To projekt under TestDemo/CodeKata </p>
+                  <ul>
+                    <li>Code </li>
+                    <li>Code.Tests </li>
+                  </ul>
+                </li>
+                <li><p>Bør vere sjølvforklarande...</p></li>
+              </ul>             
             </section>
         </section>
 

@@ -3,6 +3,9 @@
   max-height: 500px;
 }
 
+.reveal .bright, .reveal .bright h3 {
+  color: #CAE8D3;
+}
 .reveal pre.medium {
   max-width: 100%;
 }
