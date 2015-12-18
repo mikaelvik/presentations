@@ -1,3 +1,7 @@
+.reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+  text-transform: none;
+}
+
 .reveal pre code {
   font-size: .9em;
   max-height: 500px;
@@ -20,7 +24,7 @@ span.small {
 .reveal .medium {
   font-size: .8em;
 }
-ul.medium {
+ul.medium, reveal div.medium {
   font-size: .7em;
   line-height: 120%;
 }

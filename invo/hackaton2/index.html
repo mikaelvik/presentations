@@ -18,8 +18,9 @@
 
   <!-- If the query includes 'print-pdf', use the PDF print sheet -->
   <script>
-    document.write('<link rel="stylesheet" href="../../reveal/css/print/' + (window.location.search.match(/print-pdf/gi) ? 'pdf'
-        : 'paper')
+    document.write(
+      '<link rel="stylesheet" href="../../reveal/css/print/' 
+      + (window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper')
       + '.css" type="text/css" media="print">');
   </script>
 
@@ -32,69 +33,165 @@
 
 <div class="reveal">
 <div class="slides">
-<section>
-  <h1>Hackaton #2</h1>
-  <h3>WiX</h3>
-  <p>
-    <a href="http://github.com/mikaelvik">Mikael Vik</a> / mikael.vik@gmail.com
-  </p>
-</section>
 
-<section data-markdown>
-  ## Agenda
-  * WiX
-</section>
-
-<section>
-  <h3>Disclaimer</h3>
-  <p>Mest for utviklarane..</p>
-</section>
-
-<section>
-  <section data-markdown>
-    <script type="text/template">
-      ## WiX 
-      
-      * Windows Installer XML
-      * Første Open Source-prosjekt frå Microsoft hosta eksternt
-      * Deklarativ spesifikasjon
-      * Full MSBuild-støtte
-              
-    </script>
+  <section>
+    <h3>Hackaton #2</h3>
+    <h1>WiX</h1>
+    <p class=small>
+      <a href="http://github.com/mikaelvik">Mikael Vik</a> / mikael.vik@gmail.com
+    </p>
   </section>
 
   <section data-markdown>
-    ### Product
-
-    * Features
-    * Componenents
-    * Custom Actions
-    * Fragments
-
-    * Verdt å nevne
-        * haugevis av guids (installerte plugin, Ctrl+I, G)
-
+    ## Agenda
+    * WiX
+        * Intro
+        * Windows Installer
+        * MSI
+        * Exe
+        * MSBuild+TeamCity
   </section>
 
-  <section data-markdown>
-    ### Bundle
-
-  </section>
-</section>
-
-<section>
-  <section data-markdown>
-    <script type="text/template">
-      ### Toolset
+  <section>
+    <section data-markdown>
+      <script type="text/template">
+        ## WiX 
         
-      * Candle - compile
-      * Light - link
-      * Heat - harvest
-      * Dark - reverse engineer
-      * Burn - bootstrap
+        * Windows Installer XML
+        * Første Open Source-prosjekt frå Microsoft hosta eksternt
+        * Deklarativ spesifikasjon
+        * Full MSBuild-støtte
+                
+      </script>
+    </section>
+
+    <section data-markdown>
+      ### Product
+
+      * Features
+      * Componenents
+      * Custom Actions
+      * Fragments
+
+      * Verdt å nevne
+          * haugevis av guids (installerte plugin, Ctrl+I,)
+
+    </section>
+
+    <section data-markdown>
+      ### Bundle
+
+    </section>
+  </section>
+
+  <section>
+    <section data-markdown>
+      <script type="text/template">
+        ### Toolset
+          
+        * Candle - compile
+        * Light - link
+        * Heat - harvest
+        * Dark - reverse engineer
+        * Burn - bootstrap
+      </script>
+    </section>
+    
+  </section>
+
+  <section data-markdown contenteditable=contenteditable>
+    <script type="text/template">
+      ### Burn - bootstrapper
+      
+      * Exe-fil med bundla msi-pakkar
+      * Installasjon av fleire pakkar
+      * Prerequisites
+          * .NET (vha extension)
+          * VSTOR (vha registry search og remote payload)
     </script>
   </section>
+
+  <section data-markdown contenteditable=contenteditable>
+    <script type="text/template">
+      ### Dark - reverse engineering
+      
+      * Lag wxs for eksisterende msi
+      * God på:
+          * filer
+          * registry
+      * Dårlig på:
+          * custom actions
+    </script>
+  </section>
+
   <section data-markdown>
+    <script type="text/template">
+      ### Heat - harvesting
+      
+      * Automatisk opprett wxs components for filer
+      * Særs nyttig for remote payloads
+      
+      ```bash
+      > heat payload vstor_redis.exe -out remote.xml
+      ```
+
+      ```xml 
+      <RemotePayload 
+           ProductName="Microsoft Visual Studio Tools for Office Runtime 2010 Redistributable"
+           Description="Microsoft Visual Studio Tools for Office Runtime 2010 Redistributable Setup"
+           Version="10.0.60724.0"
+           Size="40102072"
+           CertificatePublicKey="52868DFCA6E3AF2632389E6C1EE7D0468D3797D0"
+           CertificateThumbprint="3BDA323E552DB1FDE5F4FBEE75D6D5B2B187EEDC"
+           Hash="F6022EB966DF7AF80F6DF5DB0D00A0B7A8F516B3" />
+      ```
+    </script>
+  </section>
+
+  <section data-markdown>
+    ### Preprocessor
+
+    * [Dokumentasjon](http://wixtoolset.org/documentation/manual/v3/overview/preprocessor.html)
+    * Bygg ulike installere 
+    * Filtrér hvilke deler av som tas med i bygget
+        * conditionals (if, ifdef, ifndef, elseif, else, endif)
+        * foreach
+
+  </section>
+
+
+
+  <!-- Bygge-demo -->
+  <section data-background="#8F7700" data-transition="zoom" data-transition-speed="slow">
+    <h1 style="color: black; font-size: 9em;">Demo</h1>
+    <p style="color: black">Testing i VS</p>
+  </section>
+
+  <section>
+    <section data-transition="fade">
+      <h2>TeamCity-oppsett</h2>
+      <ul>
+        <li>Automatisk bygge artefakter</li>
+        <li>Sette versjon</li>
+        <li class="fragment roll-in">Tilgjengeligjøres enkelt</li>
+      </ul>
+    </section>
+  </section>
+
+  <section>
+    <section data-markdown contenteditable=contenteditable>
+      <script type="text/template">
+        ## Andre muligheter med WiX
+        
+        * Installere Windows Service
+        * Installere web-app i IIS
+        * Ganske enkelt plassere filer på ei maskin...
+        * +++
+      </script>
+    </section>
+  </section>
+
+  <section data-markdown data-background="#E1C5EB" data-background-transition="zoom">
     ### Gjenstår
 
     * Upgrade
@@ -109,107 +206,29 @@
         * verifisering
         * lagre i registry (behold ved uninstall?)
   </section>
-</section>
 
-<section data-markdown contenteditable=contenteditable>
-  <script type="text/template">
-    ### Burn - bootstrapper
-    
-    * Exe-fil med bundla msi-pakkar
-    * Installasjon av fleire pakkar
-    * Prerequisites
-        * .NET (vha extension)
-        * VSTOR (vha registry search og remote payload)
-  </script>
-</section>
+  <section data-background="#EE9732" data-transition="zoom" data-transition-speed="slow">
+    <h1 style="color: black;">Spørsmål?</h1>
+    <img height="350" src="../assets/hjallis_cooper.jpg" alt="">
+  </section>
 
-<section data-markdown contenteditable=contenteditable>
-  <script type="text/template">
-    ### Dark - reverse engineering
-    
-    * Lag wxs for eksisterende msi
-    * God på:
-        * filer
-        * registry
-    * Dårlig på:
-        * custom actions
-  </script>
-</section>
+  <section data-background="#B8E0DE" data-transition="fade" data-transition-speed="slow">
+    <h2>Neste Hackaton</h2>
 
-<section data-markdown contenteditable=contenteditable>
-  <script type="text/template">
-    ### Heat - harvesting
-    
-    * Automatisk opprett wxs components for filer
-    * Særs nyttig for remote payloads
-    
-    ```bash
-    heat payload vstor_redis.exe -out remote.xml
-    ```
-
-  </script>
-</section>
-
-
-
-<!-- Bygge-demo -->
-<section data-background="#8F7700" data-transition="zoom" data-transition-speed="slow">
-  <h1 style="color: black; font-size: 9em;">Demo</h1>
-  <p style="color: black">Testing i VS</p>
-</section>
-
-<section>
-  <section data-transition="fade">
-    <h2>TeamCity-oppsett</h2>
     <ul>
-      <li>Automatisk bygge artefakter</li>
-      <li>Sette versjon</li>
-      <li class="fragment roll-in">Tilgjengeligjøres enkelt</li>
+      <li>Dependency Injection
+        <ul>
+          <li>
+            <a href="https://github.com/ninject/ninject">Ninject</a>
+          </li>
+          <li>evt andre alternativ</li>
+        </ul>
+      </li>
+      <li>Git vs TFVC</li>
     </ul>
   </section>
-</section>
 
-<section>
-  <section data-markdown contenteditable=contenteditable>
-    <script type="text/template">
-      ## Andre muligheter med WiX
-      
-      * Installere Windows Service
-      * Installere web-app i IIS
-      * +++
-    </script>
-  </section>
-</section>
-
-
-<section>
-  <section data-background="#E1C5EB" data-background-transition="zoom">
-    <h2>Oppgåver</h2>
-  </section>
-</section>
-
-<section data-background="#EE9732" data-transition="zoom" data-transition-speed="slow">
-  <h1 style="color: black;">Spørsmål?</h1>
-  <img height="350" src="../assets/stupidpeople.jpg" alt="">
-</section>
-
-<section data-background="#B8E0DE" data-transition="fade" data-transition-speed="slow">
-  <h2>Neste Hackaton</h2>
-
-  <ul>
-    <li>Dependency Injection
-      <ul>
-        <li>
-          <a href="https://github.com/ninject/ninject">Ninject</a>
-        </li>
-        <li>evt andre alternativ</li>
-      </ul>
-    </li>
-    <li>Git vs TFVC</li>
-  </ul>
-</section>
 </div>
-
 </div>
 
 <script src="../../reveal/lib/js/head.min.js"></script>
