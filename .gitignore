@@ -1,2 +1,4 @@
 *.swp
 .DS_store
+invo/lisensiering/*
+invo/lisensiering/**
